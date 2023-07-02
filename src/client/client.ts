@@ -1,105 +1,88 @@
-import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import Stats from 'three/examples/jsm/libs/stats.module'
-import { GUI } from 'dat.gui'
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
+import Stats from "three/examples/jsm/libs/stats.module";
 
-const scene = new THREE.Scene()
-scene.add(new THREE.AxesHelper(5))
+const scene = new THREE.Scene();
+scene.add(new THREE.AxesHelper(25));
+
+const light = new THREE.SpotLight();
+light.position.set(20, 20, 20);
+scene.add(light);
 
 const camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-)
-camera.position.z = 3
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.z = 40;
 
-const renderer = new THREE.WebGLRenderer()
-renderer.setSize(window.innerWidth, window.innerHeight)
-document.body.appendChild(renderer.domElement)
+const renderer = new THREE.WebGLRenderer();
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-new OrbitControls(camera, renderer.domElement)
+const controls = new OrbitControls(camera, renderer.domElement);
+// controls.enableDamping = true;
 
-const boxGeometry = new THREE.BoxGeometry()
-const sphereGeometry = new THREE.SphereGeometry()
-const icosahedronGeometry = new THREE.IcosahedronGeometry(1, 0)
-const planeGeometry = new THREE.PlaneGeometry()
-const torusKnotGeometry = new THREE.TorusKnotGeometry()
 
-const material = new THREE.MeshBasicMaterial()
-//const material= new THREE.MeshNormalMaterial()
+const material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true });
+const material2 = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-const cube = new THREE.Mesh(boxGeometry, material)
-cube.position.x = 5
-scene.add(cube)
 
-const sphere = new THREE.Mesh(sphereGeometry, material)
-sphere.position.x = 3
-scene.add(sphere)
+const loader = new PLYLoader();
+const fileName1: string = "models/premolar-2-right.ply";
+const geometry1 = (geometry: THREE.BufferGeometry) => {
+  // geometry.computeVertexNormals();
+  const mesh = new THREE.Mesh(geometry, material);
+  // mesh.rotateX(-Math.PI / 2);
+  scene.add(mesh);
+};
+const progress1 = (xhr: ProgressEvent) => {
+  console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+};
+const error1 = (error: ErrorEvent) => {
+  console.log(error);
+};
+loader.load(fileName1, geometry1, progress1, error1);
 
-const icosahedron = new THREE.Mesh(icosahedronGeometry, material)
-icosahedron.position.x = 0
-scene.add(icosahedron)
+const fileName2: string = "models/gum.ply";
+const geometry2 = (geometry: THREE.BufferGeometry) => {
+  const mesh = new THREE.Mesh(geometry, material2);
+  scene.add(mesh);
+};
+const progress2 = (xhr: ProgressEvent) => {
+  console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+};
+const error2 = (error: ErrorEvent) => {
+  console.log(error);
+};
+loader.load(fileName2, geometry2, progress2, error2);
 
-const plane = new THREE.Mesh(planeGeometry, material)
-plane.position.x = -2
-scene.add(plane)
-
-const torusKnot = new THREE.Mesh(torusKnotGeometry, material)
-torusKnot.position.x = -5
-scene.add(torusKnot)
-
-window.addEventListener('resize', onWindowResize, false)
+window.addEventListener("resize", onWindowResize, false);
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight
-    camera.updateProjectionMatrix()
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    render()
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  render();
 }
 
-const stats = new Stats()
-document.body.appendChild(stats.dom)
-
-const options = {
-    side: {
-        FrontSide: THREE.FrontSide, // load only front side i think useful for ply 
-        BackSide: THREE.BackSide,
-        DoubleSide: THREE.DoubleSide,
-    },
-}
-
-const gui = new GUI()
-const materialFolder = gui.addFolder('THREE.Material')
-materialFolder
-    .add(material, 'transparent')
-    .onChange(() => (material.needsUpdate = true))
-materialFolder.add(material, 'opacity', 0, 1, 0.01)
-materialFolder.add(material, 'depthTest')
-materialFolder.add(material, 'depthWrite')
-materialFolder
-    .add(material, 'alphaTest', 0, 1, 0.01)
-    .onChange(() => updateMaterial())
-materialFolder.add(material, 'visible')
-materialFolder
-    .add(material, 'side', options.side)
-    .onChange(() => updateMaterial())
-materialFolder.open()
-
-function updateMaterial() {
-    material.side = Number(material.side) as THREE.Side
-    material.needsUpdate = true // always dont do it.
-}
+const stats = new Stats();
+document.body.appendChild(stats.dom);
 
 function animate() {
-    requestAnimationFrame(animate)
+  requestAnimationFrame(animate);
 
-    render()
+  controls.update();
 
-    stats.update()
+  render();
+
+  stats.update();
 }
 
 function render() {
-    renderer.render(scene, camera)
+  renderer.render(scene, camera);
 }
 
-animate()
+animate();
