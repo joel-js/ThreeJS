@@ -1,62 +1,72 @@
 import * as THREE from "three";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Stats from 'three/examples/jsm/libs/stats.module';
+import { GUI } from 'dat.gui';
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff)
 
-const camera1 = new THREE.PerspectiveCamera(
+const camera = new THREE.PerspectiveCamera(
   75,
-  1,
+  window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-const camera2 = new THREE.OrthographicCamera(-2,2,2,-2,0.1, 100);
-camera1.position.z = 2;
-camera2.position.z = 2;
+// camera.position.z = 2;
+camera.position.add(new THREE.Vector3(0,0,2));
+console.log(camera.position);
+const canvas = document.getElementById('1') as HTMLCanvasElement;
 
-const canvas1 = document.getElementById('1') as HTMLCanvasElement;  
-const canvas2 = document.getElementById('2') as HTMLCanvasElement;  
+const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+renderer.setSize(window.innerWidth, window.innerHeight);
+// document.body.appendChild(renderer.domElement);
 
-const renderer1 = new THREE.WebGLRenderer({ canvas: canvas1 });
-renderer1.setSize(200, 200);
-
-const renderer2 = new THREE.WebGLRenderer({ canvas: canvas2 });
-renderer2.setSize(200, 200);
-
-const controls1 = new OrbitControls(camera1, canvas1);
-const controls2 = new OrbitControls(camera2, canvas2);
+const controls = new OrbitControls(camera, renderer.domElement);
+// controls.addEventListener("change", render); //this line is unnecessary if you are re-rendering within the animation loop
 
 const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshBasicMaterial({
-  color: 0x0000ff,
+  color: 0x00ff00,
   wireframe: true,
 });
 
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
-// window.addEventListener("resize", onWindowResize, false);
-// function onWindowResize() {
-//   camera1.aspect = window.innerWidth / window.innerHeight;
-//   camera1.updateProjectionMatrix();
-//   renderer1.setSize(window.innerWidth, window.innerHeight);
-//   render();
-// }
+window.addEventListener("resize", onWindowResize, false);
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  render();
+}
+
+const stats = new Stats();
+document.body.appendChild(stats.dom);
+
+const gui = new GUI();
+const cubeFolder = gui.addFolder('Cube');
+cubeFolder.add(cube.rotation, 'x', 0, Math.PI * 2);
+cubeFolder.add(cube.rotation, 'y', 0, Math.PI * 2);
+cubeFolder.add(cube.rotation, 'z', 0, Math.PI * 2);
+cubeFolder.open();
+const cameraFolder = gui.addFolder('camera');
+cameraFolder.add(camera.position, 'x', 0, 10);
+cameraFolder.add(camera.position, 'y', 0, 10);
+cameraFolder.add(camera.position, 'z', 0, 10);
+cameraFolder.open();
+function animate() {
+  requestAnimationFrame(animate)
+
+//     cube.rotation.x += 0.01
+//     cube.rotation.y += 0.01
+
+    render();
+  stats.update();
+}
 
 function render() {
-  renderer1.render(scene, camera1);
-  renderer2.render(scene,camera2);
+  renderer.render(scene, camera);
 }
 
-function animate() {
-  requestAnimationFrame(animate);
-
-  // cube.rotation.x += 0.01;
-  // cube.rotation.y += 0.01;
-
-  render();
-  controls1.update();
-  controls2.update();
-}
-
-animate();
+animate()
+// render();
