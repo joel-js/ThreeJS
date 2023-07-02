@@ -1,62 +1,105 @@
-import * as THREE from "three";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import Stats from 'three/examples/jsm/libs/stats.module'
+import { GUI } from 'dat.gui'
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff)
+const scene = new THREE.Scene()
+scene.add(new THREE.AxesHelper(5))
 
-const camera1 = new THREE.PerspectiveCamera(
-  75,
-  1,
-  0.1,
-  1000
-);
-const camera2 = new THREE.OrthographicCamera(-2,2,2,-2,0.1, 100);
-camera1.position.z = 2;
-camera2.position.z = 2;
+const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+)
+camera.position.z = 3
 
-const canvas1 = document.getElementById('1') as HTMLCanvasElement;  
-const canvas2 = document.getElementById('2') as HTMLCanvasElement;  
+const renderer = new THREE.WebGLRenderer()
+renderer.setSize(window.innerWidth, window.innerHeight)
+document.body.appendChild(renderer.domElement)
 
-const renderer1 = new THREE.WebGLRenderer({ canvas: canvas1 });
-renderer1.setSize(200, 200);
+new OrbitControls(camera, renderer.domElement)
 
-const renderer2 = new THREE.WebGLRenderer({ canvas: canvas2 });
-renderer2.setSize(200, 200);
+const boxGeometry = new THREE.BoxGeometry()
+const sphereGeometry = new THREE.SphereGeometry()
+const icosahedronGeometry = new THREE.IcosahedronGeometry(1, 0)
+const planeGeometry = new THREE.PlaneGeometry()
+const torusKnotGeometry = new THREE.TorusKnotGeometry()
 
-const controls1 = new OrbitControls(camera1, canvas1);
-const controls2 = new OrbitControls(camera2, canvas2);
+const material = new THREE.MeshBasicMaterial()
+//const material= new THREE.MeshNormalMaterial()
 
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({
-  color: 0x0000ff,
-  wireframe: true,
-});
+const cube = new THREE.Mesh(boxGeometry, material)
+cube.position.x = 5
+scene.add(cube)
 
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+const sphere = new THREE.Mesh(sphereGeometry, material)
+sphere.position.x = 3
+scene.add(sphere)
 
-// window.addEventListener("resize", onWindowResize, false);
-// function onWindowResize() {
-//   camera1.aspect = window.innerWidth / window.innerHeight;
-//   camera1.updateProjectionMatrix();
-//   renderer1.setSize(window.innerWidth, window.innerHeight);
-//   render();
-// }
+const icosahedron = new THREE.Mesh(icosahedronGeometry, material)
+icosahedron.position.x = 0
+scene.add(icosahedron)
 
-function render() {
-  renderer1.render(scene, camera1);
-  renderer2.render(scene,camera2);
+const plane = new THREE.Mesh(planeGeometry, material)
+plane.position.x = -2
+scene.add(plane)
+
+const torusKnot = new THREE.Mesh(torusKnotGeometry, material)
+torusKnot.position.x = -5
+scene.add(torusKnot)
+
+window.addEventListener('resize', onWindowResize, false)
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight
+    camera.updateProjectionMatrix()
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    render()
+}
+
+const stats = new Stats()
+document.body.appendChild(stats.dom)
+
+const options = {
+    side: {
+        FrontSide: THREE.FrontSide, // load only front side i think useful for ply 
+        BackSide: THREE.BackSide,
+        DoubleSide: THREE.DoubleSide,
+    },
+}
+
+const gui = new GUI()
+const materialFolder = gui.addFolder('THREE.Material')
+materialFolder
+    .add(material, 'transparent')
+    .onChange(() => (material.needsUpdate = true))
+materialFolder.add(material, 'opacity', 0, 1, 0.01)
+materialFolder.add(material, 'depthTest')
+materialFolder.add(material, 'depthWrite')
+materialFolder
+    .add(material, 'alphaTest', 0, 1, 0.01)
+    .onChange(() => updateMaterial())
+materialFolder.add(material, 'visible')
+materialFolder
+    .add(material, 'side', options.side)
+    .onChange(() => updateMaterial())
+materialFolder.open()
+
+function updateMaterial() {
+    material.side = Number(material.side) as THREE.Side
+    material.needsUpdate = true // always dont do it.
 }
 
 function animate() {
-  requestAnimationFrame(animate);
+    requestAnimationFrame(animate)
 
-  // cube.rotation.x += 0.01;
-  // cube.rotation.y += 0.01;
+    render()
 
-  render();
-  controls1.update();
-  controls2.update();
+    stats.update()
 }
 
-animate();
+function render() {
+    renderer.render(scene, camera)
+}
+
+animate()
