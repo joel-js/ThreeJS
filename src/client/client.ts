@@ -16,38 +16,35 @@ const camera = new THREE.PerspectiveCamera(
   window.innerWidth / window.innerHeight,
   0.1,
   1000
-);
-camera.position.z = 40;
+  );
+  camera.position.z = 40;
 
-const renderer = new THREE.WebGLRenderer();
-renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.setSize(window.innerWidth, window.innerHeight);
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-// controls.enableDamping = true;
 const transformControls = new TransformControls(camera, renderer.domElement);
 transformControls.setMode('rotate')
 scene.add(transformControls)
 
 transformControls.addEventListener('dragging-changed', function (event) {
   controls.enabled = !event.value
-  //dragControls.enabled = !event.value
 })
 
 window.addEventListener('keydown', function (event) {
   switch (event.key) {
-      case 'g':
-          transformControls.setMode('translate')
-          break
+    case 'g':
+      transformControls.setMode('translate')
+      break
       case 'r':
-          transformControls.setMode('rotate')
-          break
-      case 's':
+        transformControls.setMode('rotate')
+        break
+        case 's':
           transformControls.setMode('scale')
           break
-  }
-})
+        }
+      })
 
 const material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true });
 const material2 = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -57,11 +54,13 @@ const loader = new PLYLoader();
 const loadPLY  = (fileName: string, material: THREE.MeshBasicMaterial, loader: PLYLoader, transformControl: boolean) => {
   const geometry1 = (geometry: THREE.BufferGeometry) => {
     const mesh = new THREE.Mesh(geometry, material);
-    const boundingBox = new THREE.Box3().setFromObject(mesh);
-    const center = boundingBox.getCenter(new THREE.Vector3());
-    
-    transformControl && transformControls.position.copy(center);
-    transformControl && transformControls.attach(mesh);
+    console.dir(mesh)
+    if (transformControl) {
+      const boundingBox = new THREE.Box3().setFromObject(mesh);
+      const center = boundingBox.getCenter(new THREE.Vector3());
+      transformControls.position.copy(center);
+      transformControls.attach(mesh);
+    }
     scene.add(mesh);
   };
   const progress1 = (xhr: ProgressEvent) => {
