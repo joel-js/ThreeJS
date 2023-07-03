@@ -1,62 +1,100 @@
-import * as THREE from "three";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+// import { DragControls } from 'three/examples/jsm/controls/DragControls'
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls'
+import Stats from 'three/examples/jsm/libs/stats.module'
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff)
+const scene = new THREE.Scene()
+scene.add(new THREE.AxesHelper(5))
 
-const camera1 = new THREE.PerspectiveCamera(
-  75,
-  1,
-  0.1,
-  1000
-);
-const camera2 = new THREE.OrthographicCamera(-2,2,2,-2,0.1, 100);
-camera1.position.z = 2;
-camera2.position.z = 2;
+const group: THREE.Group = new THREE.Group();
+group.position.set(1,1,1);
+const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+)
+camera.position.set(0,4,4);
 
-const canvas1 = document.getElementById('1') as HTMLCanvasElement;  
-const canvas2 = document.getElementById('2') as HTMLCanvasElement;  
+const renderer = new THREE.WebGLRenderer()
+renderer.setSize(window.innerWidth, window.innerHeight)
+document.body.appendChild(renderer.domElement)
 
-const renderer1 = new THREE.WebGLRenderer({ canvas: canvas1 });
-renderer1.setSize(200, 200);
+const geometry = new THREE.BoxGeometry()
+const material = new THREE.MeshNormalMaterial({ transparent: true })
 
-const renderer2 = new THREE.WebGLRenderer({ canvas: canvas2 });
-renderer2.setSize(200, 200);
+const cube1: THREE.Mesh = new THREE.Mesh(geometry, material)
+cube1.position.set(0,0,4);
+group.add(cube1);
+// scene.add(cube1);
 
-const controls1 = new OrbitControls(camera1, canvas1);
-const controls2 = new OrbitControls(camera2, canvas2);
+const cube2: THREE.Mesh = new THREE.Mesh(geometry, material)
+cube2.position.set(0,4,0);
+group.add(cube2);
 
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({
-  color: 0x0000ff,
-  wireframe: true,
-});
+scene.add(group);
 
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+console.dir(group)
 
-// window.addEventListener("resize", onWindowResize, false);
-// function onWindowResize() {
-//   camera1.aspect = window.innerWidth / window.innerHeight;
-//   camera1.updateProjectionMatrix();
-//   renderer1.setSize(window.innerWidth, window.innerHeight);
-//   render();
-// }
+const orbitControls = new OrbitControls(camera, renderer.domElement)
 
-function render() {
-  renderer1.render(scene, camera1);
-  renderer2.render(scene,camera2);
+
+const transformControls = new TransformControls(camera, renderer.domElement)
+transformControls.attach(group)
+transformControls.setMode('rotate')
+scene.add(transformControls)
+
+transformControls.addEventListener('dragging-changed', function (event) {
+    orbitControls.enabled = !event.value
+    //dragControls.enabled = !event.value
+})
+
+window.addEventListener('keydown', function (event) {
+    switch (event.key) {
+        case 'g':
+            transformControls.setMode('translate')
+            break
+        case 'r':
+            transformControls.setMode('rotate')
+            break
+        case 's':
+            transformControls.setMode('scale')
+            break
+    }
+})
+
+// const backGroundTexture = new THREE.CubeTextureLoader().load([
+//     'img/px_eso0932a.jpg',
+//     'img/nx_eso0932a.jpg',
+//     'img/py_eso0932a.jpg',
+//     'img/ny_eso0932a.jpg',
+//     'img/pz_eso0932a.jpg',
+//     'img/nz_eso0932a.jpg',
+// ])
+// scene.background = backGroundTexture
+
+window.addEventListener('resize', onWindowResize, false)
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight
+    camera.updateProjectionMatrix()
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    render()
 }
+
+const stats = new Stats()
+document.body.appendChild(stats.dom)
 
 function animate() {
-  requestAnimationFrame(animate);
+    requestAnimationFrame(animate)
 
-  // cube.rotation.x += 0.01;
-  // cube.rotation.y += 0.01;
+    render()
 
-  render();
-  controls1.update();
-  controls2.update();
+    stats.update()
 }
 
-animate();
+function render() {
+    renderer.render(scene, camera)
+}
+
+animate()
