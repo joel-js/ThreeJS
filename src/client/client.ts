@@ -1,14 +1,15 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 import Stats from "three/examples/jsm/libs/stats.module";
 
 const scene = new THREE.Scene();
 scene.add(new THREE.AxesHelper(25));
 
-const light = new THREE.SpotLight();
-light.position.set(20, 20, 20);
-scene.add(light);
+// const light = new THREE.SpotLight();
+// light.position.set(20, 20, 20);
+// scene.add(light);
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -25,40 +26,56 @@ document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 // controls.enableDamping = true;
+const transformControls = new TransformControls(camera, renderer.domElement);
+transformControls.setMode('rotate')
+scene.add(transformControls)
 
+transformControls.addEventListener('dragging-changed', function (event) {
+  controls.enabled = !event.value
+  //dragControls.enabled = !event.value
+})
+
+window.addEventListener('keydown', function (event) {
+  switch (event.key) {
+      case 'g':
+          transformControls.setMode('translate')
+          break
+      case 'r':
+          transformControls.setMode('rotate')
+          break
+      case 's':
+          transformControls.setMode('scale')
+          break
+  }
+})
 
 const material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true });
 const material2 = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-
 const loader = new PLYLoader();
-const fileName1: string = "models/premolar-2-right.ply";
-const geometry1 = (geometry: THREE.BufferGeometry) => {
-  // geometry.computeVertexNormals();
-  const mesh = new THREE.Mesh(geometry, material);
-  // mesh.rotateX(-Math.PI / 2);
-  scene.add(mesh);
-};
-const progress1 = (xhr: ProgressEvent) => {
-  console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-};
-const error1 = (error: ErrorEvent) => {
-  console.log(error);
-};
-loader.load(fileName1, geometry1, progress1, error1);
 
-const fileName2: string = "models/gum.ply";
-const geometry2 = (geometry: THREE.BufferGeometry) => {
-  const mesh = new THREE.Mesh(geometry, material2);
-  scene.add(mesh);
-};
-const progress2 = (xhr: ProgressEvent) => {
-  console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-};
-const error2 = (error: ErrorEvent) => {
-  console.log(error);
-};
-loader.load(fileName2, geometry2, progress2, error2);
+const loadPLY  = (fileName: string, material: THREE.MeshBasicMaterial, loader: PLYLoader, transformControl: boolean) => {
+  const geometry1 = (geometry: THREE.BufferGeometry) => {
+    const mesh = new THREE.Mesh(geometry, material);
+    const boundingBox = new THREE.Box3().setFromObject(mesh);
+    const center = boundingBox.getCenter(new THREE.Vector3());
+    
+    transformControl && transformControls.position.copy(center);
+    transformControl && transformControls.attach(mesh);
+    scene.add(mesh);
+  };
+  const progress1 = (xhr: ProgressEvent) => {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  };
+  const error1 = (error: ErrorEvent) => {
+    console.log(error);
+  };
+  loader.load(fileName, geometry1, progress1, error1);
+}
+
+
+loadPLY( 'models/premolar-2-right.ply',material, loader, true);
+loadPLY('models/gum.ply', material2, loader, false);
 
 window.addEventListener("resize", onWindowResize, false);
 function onWindowResize() {
