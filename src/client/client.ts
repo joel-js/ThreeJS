@@ -6,6 +6,7 @@ import Stats from "three/examples/jsm/libs/stats.module";
 
 const scene = new THREE.Scene();
 scene.add(new THREE.AxesHelper(25));
+const teethMoveAid: THREE.Group = new THREE.Group();
 
 // const light = new THREE.SpotLight();
 // light.position.set(20, 20, 20);
@@ -56,12 +57,13 @@ const loadPLY  = (fileName: string, material: THREE.MeshBasicMaterial, loader: P
     const mesh = new THREE.Mesh(geometry, material);
     console.dir(mesh)
     if (transformControl) {
+      teethMoveAid.add(mesh);
       const boundingBox = new THREE.Box3().setFromObject(mesh);
       const center = boundingBox.getCenter(new THREE.Vector3());
-      transformControls.position.copy(center);
-      transformControls.attach(mesh);
+      teethMoveAid.position.set(center.x, center.y, center.z);
+      mesh.position.set(-center.x, -center.y, -center.z);
     }
-    scene.add(mesh);
+    !transformControl && scene.add(mesh);
   };
   const progress1 = (xhr: ProgressEvent) => {
     console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
@@ -71,7 +73,8 @@ const loadPLY  = (fileName: string, material: THREE.MeshBasicMaterial, loader: P
   };
   loader.load(fileName, geometry1, progress1, error1);
 }
-
+transformControls.attach(teethMoveAid);
+scene.add(teethMoveAid);
 
 loadPLY( 'models/premolar-2-right.ply',material, loader, true);
 loadPLY('models/gum.ply', material2, loader, false);
