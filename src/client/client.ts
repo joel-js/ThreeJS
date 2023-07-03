@@ -8,7 +8,7 @@ const scene = new THREE.Scene()
 scene.add(new THREE.AxesHelper(5))
 
 const group: THREE.Group = new THREE.Group();
-group.position.set(1,1,1);
+group.position.set(0,0,4);
 const camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -25,13 +25,13 @@ const geometry = new THREE.BoxGeometry()
 const material = new THREE.MeshNormalMaterial({ transparent: true })
 
 const cube1: THREE.Mesh = new THREE.Mesh(geometry, material)
-cube1.position.set(0,0,4);
+cube1.position.set(0,0,0);
 group.add(cube1);
 // scene.add(cube1);
 
 const cube2: THREE.Mesh = new THREE.Mesh(geometry, material)
 cube2.position.set(0,4,0);
-group.add(cube2);
+// group.add(cube2);
 
 scene.add(group);
 
