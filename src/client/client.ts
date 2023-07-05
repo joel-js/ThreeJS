@@ -8,7 +8,7 @@ const scene: THREE.Scene = new THREE.Scene();
 scene.add(new THREE.AxesHelper(25));
 const teethWrapper: THREE.Group = new THREE.Group();
 
-const camera: THREE.PerspectiveCamera= new THREE.PerspectiveCamera(
+const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
@@ -42,18 +42,38 @@ window.addEventListener("keydown", function (event) {
       break;
   }
 });
+const ambientLight = new THREE.AmbientLight(0xffffff);
+ambientLight.position.set(-100, 10, 0);
+scene.add(ambientLight);
 
-const material: THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial({
-  color: 0xffff00,
-  wireframe: true,
+const directionalLight = new THREE.DirectionalLight();
+directionalLight.position.set(-100, 10, 0);
+scene.add(directionalLight);
+
+const aLightHelper = new THREE.DirectionalLightHelper(directionalLight);
+scene.add(aLightHelper);
+
+
+const material: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial({
+  color: 0xffffff,
+  wireframe: false,
+  side: THREE.DoubleSide
 });
-const material2: THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+const material2: THREE.MeshPhongMaterial = new THREE.MeshPhongMaterial(
+  { color: 0xfa8072,
+    side: THREE.DoubleSide,
+    shininess: 100, 
+    emissive: 0x87504a,
+  flatShading: false });
+material2.specular = new THREE.Color(0xfa8072);
+
 
 const loader: PLYLoader = new PLYLoader();
 
 const loadPLY = (
   fileName: string,
-  material: THREE.MeshBasicMaterial,
+  material: THREE.MeshPhongMaterial,
   loader: PLYLoader,
   transformControl: boolean,
   callback?: (mesh: THREE.Mesh) => void
@@ -68,7 +88,7 @@ const loadPLY = (
       mesh.position.set(-center.x, -center.y, -center.z);
     }
     else scene.add(mesh);
-    if(callback) callback(mesh); 
+    if (callback) callback(mesh);
   };
   const progress1 = (xhr: ProgressEvent): void => {
     console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
