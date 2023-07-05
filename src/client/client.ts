@@ -1,19 +1,17 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import Stats from "three/examples/jsm/libs/stats.module";
+import TransformControl from "./Controls/TransformControl";
 
 const scene = new THREE.Scene();
 scene.add(new THREE.AxesHelper(5));
 
-const raycaster: THREE.Raycaster = new THREE.Raycaster();
-const sceneMeshes: THREE.Mesh[] = [];
-let intersectedObject: THREE.Object3D | null;
-const originalMaterials: { [id: string]: THREE.Material | THREE.Material[] } = {};
+// const raycaster: THREE.Raycaster = new THREE.Raycaster();
+// const sceneMeshes: THREE.Mesh[] = [];
+// const wrapperList: THREE.Group[] = [];
+// let intersectedObject: THREE.Object3D | null;
+// const originalMaterials: { [id: string]: THREE.Material | THREE.Material[] } = {};
 
-
-const group: THREE.Group = new THREE.Group();
-group.position.set(0, 0, 4);
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -28,120 +26,122 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshNormalMaterial({ transparent: true });
+const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-const highlightedMaterial = new THREE.MeshBasicMaterial({
-  wireframe: true,
-  color: 0x00ff00,
-});
-
-const cube1: THREE.Mesh = new THREE.Mesh(geometry, material);
-cube1.position.set(0, 0, 0);
-cube1.name = "cube1";
-group.add(cube1);
-sceneMeshes.push(cube1);
-// scene.add(cube1);
-
-const cube2: THREE.Mesh = new THREE.Mesh(geometry, material);
-cube2.position.set(0, 4, 0);
-cube2.name = "cube2";
-group.add(cube2);
-sceneMeshes.push(cube2);
-// scene.add(cube2);
-scene.add(group);
-
-// console.dir(group);
+// const highlightedMaterial = new THREE.MeshBasicMaterial({
+  //   wireframe: true,
+  //   color: 0x00ff00,
+  // });
 
 const orbitControls = new OrbitControls(camera, renderer.domElement);
+  
+const transformControls = TransformControl(scene, camera, renderer, [ orbitControls ]);
 
-const transformControls = new TransformControls(camera, renderer.domElement);
-transformControls.setMode("rotate");
-scene.add(transformControls);
+const cube1: THREE.Mesh = new THREE.Mesh(geometry, material);
+cube1.name = 'cube1Name';
+const cubeWrapper = new THREE.Group();
+cubeWrapper.name = 'cubeWrapperName'
+cubeWrapper.add(cube1);
 
-transformControls.addEventListener("dragging-changed", function (event) {
-  orbitControls.enabled = !event.value;
-});
+const sceneMeshes: THREE.Mesh[] = [];
+sceneMeshes.push(cube1);
 
-window.addEventListener("keydown", function (event) {
-  switch (event.key) {
-    case "g":
-      transformControls.setMode("translate");
-      break;
-      case "r":
-      transformControls.setMode("rotate");
-      break;
-      case "s":
-        transformControls.setMode("scale");
-        break;
-      }
-    });
+const mainWrapper = new THREE.Group();
+mainWrapper.add(cubeWrapper);
+scene.add(mainWrapper);
+
+transformControls.attach(mainWrapper.children[0]);
+
+sceneMeshes[0].material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+console.log('mainWrapper', mainWrapper.children[0].name);
+console.log('cube', cube1.material);
+
+// const wrapper1 = new THREE.Group();
+// cube1.position.set(0, 0, 0);
+// cube1.name = "cube1";
+// sceneMeshes.push(cube1);
+// wrapper1.name = "cubeWrapper1";
+// wrapper1.add(cube1);
+// wrapperList.push(wrapper1);
+// scene.add(wrapper1);
+
+// const cube2: THREE.Mesh = new THREE.Mesh(geometry, material);
+// const wrapper2 = new THREE.Group();
+// cube2.position.set(0, 4, 0);
+// cube2.name = "cube2";
+// sceneMeshes.push(cube2);
+// wrapper2.name = "cubeWrapper2";
+// wrapper2.add(cube2);
+// wrapperList.push(wrapper2);
+// scene.add(wrapper2);
+
+
+
     
-    window.addEventListener("resize", onWindowResize, false);
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      render();
-    }
-    
-    type Mouse = THREE.Vector2 & {
-      x: number;
-      y: number;
-    };
-    
-    const intersectObjectList = ( event: MouseEvent): THREE.Intersection<THREE.Object3D<THREE.Event>>[] => {
-      const mouse: Mouse = new THREE.Vector2(); 
-      mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
-      mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(sceneMeshes, false);
-  return intersects;
-};
 
-
-// const onDblClick = (event: MouseEvent) => {
-  //   setMouseCoordinate(mouse2, event);
-  //   raycaster.setFromCamera(mouse2, camera);
-  //   const intersects = raycaster.intersectObjects(sceneMeshes, false);
+// type Mouse = THREE.Vector2 & {
+  //   x: number;
+  //   y: number;
   // };
-  const teethTransformControl = () => {
-    const onMouseMove = (event: MouseEvent) => {
-      const intersects: THREE.Intersection<THREE.Object3D<THREE.Event>>[] = intersectObjectList(event);  
-      if(intersects.length > 0) intersectedObject = intersects[0].object;
-      else intersectedObject = null;
-      sceneMeshes.forEach((o: THREE.Mesh, i) => {
-        if(intersectedObject && (o.name === intersectedObject.name)) sceneMeshes[i].material = highlightedMaterial;
-        else sceneMeshes[i].material = material;
-      });
-    };
-    const onDblClick = (event: MouseEvent) => {
-      const intersects: THREE.Intersection<THREE.Object3D<THREE.Event>>[] = intersectObjectList(event);  
-      if(intersects.length > 0) intersectedObject = intersects[0].object;
-      else intersectedObject = null;
-      sceneMeshes.forEach((o: THREE.Mesh, i) => {
-        if(intersectedObject && (o.name === intersectedObject.name)) transformControls.attach(sceneMeshes[i]);
-        // else sceneMeshes[i].material = material;
-      });
-    };
-    renderer.domElement.addEventListener("mousemove", onMouseMove, false);
-    renderer.domElement.addEventListener("dblclick", onDblClick, false);
-};
+  
+  // const intersectObjectList = ( event: MouseEvent): THREE.Intersection<THREE.Object3D<THREE.Event>>[] => {
+    //   const mouse: Mouse = new THREE.Vector2(); 
+    //   mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    //   mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+    //   raycaster.setFromCamera(mouse, camera);
+    //   const intersects = raycaster.intersectObjects(sceneMeshes, false);
+    //   return intersects;
+    // };
+    
+    // const teethTransformControl = () => {
+      //   const onMouseMove = (event: MouseEvent) => {
+        //     const intersects: THREE.Intersection<THREE.Object3D<THREE.Event>>[] = intersectObjectList(event);  
+        //     if(intersects.length > 0) intersectedObject = intersects[0].object;
+        //     else intersectedObject = null;
+//     sceneMeshes.forEach((o: THREE.Mesh, i) => {
+//       if(intersectedObject && (o.name === intersectedObject.name)) sceneMeshes[i].material = highlightedMaterial;
+//       else sceneMeshes[i].material = material;
+//     });
+//   };
+//   const onDblClick = (event: MouseEvent) => {
+  //     const intersects: THREE.Intersection<THREE.Object3D<THREE.Event>>[] = intersectObjectList(event);  
+  //     if(intersects.length > 0) {
+    //       intersectedObject = intersects[0].object;
+    //     }
+    //     else intersectedObject = null;
+    //     // sceneMeshes.forEach((o: THREE.Mesh, i) => {
+      //     //   // console.log(sceneMeshes[i], wrapperList[i]);
+      //     //   if(intersectedObject && (o.name === intersectedObject.name)) {
+        //     //     console.log(intersectedObject);
+        //     //     transformControls.attach(wrapperList[i]);
+        //     //   }
+        //     //   else transformControls.detach();
+        //     // });
+        //   };
+        //   renderer.domElement.addEventListener("mousemove", onMouseMove, false);
+        //   renderer.domElement.addEventListener("dblclick", onDblClick, false);
+        // };
+        
+// teethTransformControl();
 
-teethTransformControl();
+// const stats = new Stats();
+// document.body.appendChild(stats.dom);
 
-const stats = new Stats();
-document.body.appendChild(stats.dom);
-
-function animate() {
-  requestAnimationFrame(animate);
-
-  render();
-
-  stats.update();
-}
-
-function render() {
+const render = () => {
   renderer.render(scene, camera);
 }
-
+const onWindowResize = () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  render();
+}
+window.addEventListener("resize", onWindowResize, false);
+const animate = () => {
+  requestAnimationFrame(animate);
+  render();
+  // stats.update();
+}
 animate();
+
+
