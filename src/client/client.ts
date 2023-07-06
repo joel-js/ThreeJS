@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module";
+import plyLoader from "./Loaders/plyLoader";
 import TransformControl from "./Controls/TransformControl";
 import SceneInit from "./SceneInit";
 
@@ -9,30 +10,33 @@ client.initialize();
 
 client.scene.add(new THREE.AxesHelper(25));
 
-const geometry = new THREE.BoxGeometry();
+const mainWrapper = new THREE.Group();
+
+const sceneMeshes: THREE.Mesh[] = [];
+
 const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
 const orbitControls = new OrbitControls(client.camera, client.renderer.domElement);  
 const transformControls = TransformControl(client, [ orbitControls ]);
 
-const cube1: THREE.Mesh = new THREE.Mesh(geometry, material);
-cube1.name = 'cube1Name';
-const cubeWrapper = new THREE.Group();
-cubeWrapper.name = 'cubeWrapperName'
-cubeWrapper.add(cube1);
+const teeth = new THREE.Mesh();
+const teethWrapper = new THREE.Group();
+teeth.material = material;
 
-const sceneMeshes: THREE.Mesh[] = [];
-sceneMeshes.push(cube1);
+plyLoader('models/incisor-2-left.ply', teeth, teethWrapper);
+transformControls.attach(teethWrapper);
+mainWrapper.add(teethWrapper);
 
-const mainWrapper = new THREE.Group();
-mainWrapper.add(cubeWrapper);
+
+const gum = new THREE.Mesh();
+const gumWrapper = new THREE.Group();
+gum.material = new THREE.MeshBasicMaterial({ color: 0xff00ff });;
+
+plyLoader('models/_gum.ply', gum, gumWrapper)
+console.log(gum.name)
+mainWrapper.add(gumWrapper);
+
 client.scene.add(mainWrapper);
-
-transformControls.attach(mainWrapper.children[0]);
-
-sceneMeshes[0].material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-console.log('mainWrapper', mainWrapper.children[0].name);
-console.log('cube', cube1.material);
 
 const stats = new Stats();
 
