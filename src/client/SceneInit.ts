@@ -3,7 +3,7 @@ import * as THREE from "three";
 export default class SceneInit {
   private _scene: THREE.Scene;
   private _camera: THREE.PerspectiveCamera;
-  private _renderer: THREE.WebGLRenderer ;
+  private _renderer: THREE.WebGLRenderer;
 
   constructor() {
     this._scene =  new THREE.Scene();
