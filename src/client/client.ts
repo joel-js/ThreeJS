@@ -1,11 +1,10 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module";
 import plyLoader from "./Loaders/plyLoader";
-import { files } from "./Utils/plyFilePath";
-import TransformControl from "./Controls/TransformControl";
+import { files } from "./Utils/constants";
+// import { rt } from './Utils/types';
 import SceneInit from "./SceneInit";
-import { rt } from "./Utils/types";
+import App from "./App";
 
 
 const client = new SceneInit();
@@ -15,28 +14,18 @@ client.scene.add(new THREE.AxesHelper(25));
 
 const mainWrapper = new THREE.Group();
 
-const sceneMeshes: THREE.Mesh[] = [];
-
 const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 const gumMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
-
-
-const orbitControls = new OrbitControls(
-  client.camera,
-  client.renderer.domElement
-);
-const transformControls = TransformControl(client, [orbitControls]);
-
+// const cube = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial({ wireframe: false, color: 0x00ff00}));
+// cube.position.set(0,10,0);
+// client.scene.add(cube);
 const meshes: THREE.Mesh[] = [];
 const meshWrappers: THREE.Group[] = [];
 
-const main = (result: rt) => {
-  result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
-};
-
 plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {
-    main(result)
+    result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
+    App(client, result);
   })
   .catch((error) => {
     console.error('Error loading PLY models:', error);
@@ -47,7 +36,7 @@ const stats = new Stats();
 
 const animate = (): void => {
   requestAnimationFrame(animate);
-  orbitControls.update();
+  client.controller.update();
   client.render();
   stats.update();
 };

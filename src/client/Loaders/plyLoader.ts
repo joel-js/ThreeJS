@@ -23,7 +23,7 @@ const plyLoader = (
       for (let i = 0; i < geometries.length; i++) {
         const mesh = new THREE.Mesh(geometries[i], material);
         const meshWrapper = new THREE.Group();
-
+        mesh.name = files[i];
         meshWrapper.add(mesh);
 
         const boundingBox = new THREE.Box3().setFromObject(mesh);
