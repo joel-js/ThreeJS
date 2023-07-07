@@ -45,4 +45,5 @@ export default class SceneInit {
 
     window.addEventListener("resize", this.onWindowResize, false);
   };
+  
 }
