@@ -1,54 +1,54 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import Stats from "three/examples/jsm/libs/stats.module";
-import plyLoader from "./Loaders/plyLoader";
-import { files } from "./Utils/plyFilePath";
-import TransformControl from "./Controls/TransformControl";
-import SceneInit from "./SceneInit";
-import { rt } from "./Utils/types";
+import * as THREE from 'three'
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader'
+const scene = new THREE.Scene()
 
+const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+)
+camera.position.z = 2
 
-const client = new SceneInit();
-client.initialize();
+const renderer = new THREE.WebGLRenderer()
+renderer.setSize(window.innerWidth, window.innerHeight)
+document.body.appendChild(renderer.domElement)
 
-client.scene.add(new THREE.AxesHelper(25));
+const geometry = new THREE.BoxGeometry()
+const material = new THREE.MeshBasicMaterial({
+    color: 0x00ff00
+})
 
-const mainWrapper = new THREE.Group();
+const cube = new THREE.Mesh(geometry, material)
+const loader = new PLYLoader();
+loader.load('models/canine-left.ply',function (geometry) {
+  // geometry.computeVertexNormals()
+  const mesh = new THREE.Mesh(geometry, material)
+  // mesh.rotateX(-Math.PI / 2)
+  scene.add(mesh)
+} );
 
-const sceneMeshes: THREE.Mesh[] = [];
+// scene.add(cube)
 
-const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-const gumMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+window.addEventListener('resize', onWindowResize, false)
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight
+    camera.updateProjectionMatrix()
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    render()
+}
 
+function animate() {
+    requestAnimationFrame(animate)
 
-const orbitControls = new OrbitControls(
-  client.camera,
-  client.renderer.domElement
-);
-const transformControls = TransformControl(client, [orbitControls]);
+    cube.rotation.x += 0.01
+    cube.rotation.y += 0.01
 
-const meshes: THREE.Mesh[] = [];
-const meshWrappers: THREE.Group[] = [];
+    render()
+}
 
-const main = (result: rt) => {
-  result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
-};
+function render() {
+    renderer.render(scene, camera)
+}
 
-plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
-  .then((result) => {
-    main(result)
-  })
-  .catch((error) => {
-    console.error('Error loading PLY models:', error);
-  });
-client.scene.add(mainWrapper);
-
-const stats = new Stats();
-
-const animate = (): void => {
-  requestAnimationFrame(animate);
-  orbitControls.update();
-  client.render();
-  stats.update();
-};
-animate();
+animate()
