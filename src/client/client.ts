@@ -54,7 +54,6 @@ const main = (result: rt) => {
   result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
   gui.add(options, 'teethColors').onChange((value) => {
       result.meshes.forEach((item)=> {
-        // console.log(item);
         if(item.name == '_gum.ply'){
           item.material = new THREE.MeshLambertMaterial({color:0xfa8072, side: THREE.DoubleSide})
         }else{
