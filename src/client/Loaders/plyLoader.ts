@@ -6,7 +6,7 @@ const plyLoader2 = (files: Array<string>): Promise<THREE.BufferGeometry[]> => {
   const plyModels: Promise<THREE.BufferGeometry>[] = [];
   const loader = new PLYLoader();
   for (let i = 0; i < files.length; i++) {
-    plyModels.push(loader.loadAsync(`models/${files[i]}`));
+    plyModels.push(loader.loadAsync(`models/fae_Colored/${files[i]}`));
   }
   return Promise.all(plyModels);
 };

@@ -5,19 +5,16 @@ import plyLoader from "./Loaders/plyLoader";
 import { files } from "./Utils/plyFilePath";
 import TransformControl from "./Controls/TransformControl";
 import SceneInit from "./SceneInit";
-import {ambientLight, directionalLight} from './Lights/light';
+import { ambientLight, directionalLight } from "./Lights/light";
 import { rt } from "./Utils/types";
-import * as dat from 'dat.gui';
-
+import * as dat from "dat.gui";
 
 const gui = new dat.GUI();
-const teethColors = gui.addFolder('Teeth Colors');
+const teethColors = gui.addFolder("Teeth Colors");
 const options = {
-  teethColors : true,
-}
+  teethColors: true,
+};
 // teethColors.add()
-
-
 
 const client = new SceneInit();
 client.initialize();
@@ -30,16 +27,23 @@ client.scene.background = new THREE.Color(0xc9c9d9);
 const mainWrapper = new THREE.Group();
 
 const sceneMeshes: THREE.Mesh[] = [];
-const texture = new THREE.TextureLoader().load('texture/gum_texture.jpeg');
+const texture = new THREE.TextureLoader().load("texture/gum_texture.jpeg");
 
-const material = new THREE.MeshLambertMaterial({ vertexColors: true ,side: THREE.DoubleSide });
-const gumMaterial = new THREE.MeshLambertMaterial({ color:0xfa8072 ,side: THREE.DoubleSide });
+const material = new THREE.MeshLambertMaterial({
+  vertexColors: true,
+  side: THREE.DoubleSide,
+});
+const gumMaterial = new THREE.MeshLambertMaterial({
+  color: 0xfa8072,
+  side: THREE.DoubleSide,
+});
 
 function updateLightWithCamera() {
   directionalLight.position.copy(client.camera.position);
-  directionalLight.target.position.copy(client.camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(-1));
+  directionalLight.target.position.copy(
+    client.camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(-1)
+  );
 }
-
 
 const orbitControls = new OrbitControls(
   client.camera,
@@ -52,25 +56,30 @@ const meshWrappers: THREE.Group[] = [];
 
 const main = (result: rt) => {
   result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
-  gui.add(options, 'teethColors').onChange((value) => {
-      result.meshes.forEach((item)=> {
-        if(item.name == '_gum.ply'){
-          item.material = new THREE.MeshLambertMaterial({color:0xfa8072, side: THREE.DoubleSide})
-        }else{
-        item.material = new THREE.MeshLambertMaterial({ vertexColors: value ,side: THREE.DoubleSide } );
-        }
-       
+  gui.add(options, "teethColors").onChange((value: boolean) => {
+    result.meshes.forEach((item) => {
+      if (item.name == "_gum.ply") {
+        item.material = new THREE.MeshLambertMaterial({
+          color: 0xfa8072,
+          side: THREE.DoubleSide,
+        });
+        
+      } else {
+        item.material = new THREE.MeshLambertMaterial({
+          vertexColors: value,
+          side: THREE.DoubleSide,
+        });
+      }
     });
   });
 };
 
-
 plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {
-    main(result)
+    main(result);
   })
   .catch((error) => {
-    console.error('Error loading PLY models:', error);
+    console.error("Error loading PLY models:", error);
   });
 client.scene.add(mainWrapper);
 
