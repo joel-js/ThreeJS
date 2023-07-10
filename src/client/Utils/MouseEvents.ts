@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Mouse, rt } from "./types";
 import SceneInit from "../SceneInit";
-import TransformControl from "../Controls/TransformControl";
+import TransformControl from "../Controls/TransformControl/TransformControl";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 
 class MouseEvents {

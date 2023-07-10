@@ -6,7 +6,6 @@ import { files } from "./Utils/constants";
 import SceneInit from "./SceneInit";
 import App from "./App";
 
-
 const client = new SceneInit();
 client.initialize();
 
@@ -15,10 +14,7 @@ client.scene.add(new THREE.AxesHelper(25));
 const mainWrapper = new THREE.Group();
 
 const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-const gumMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
-// const cube = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial({ wireframe: false, color: 0x00ff00}));
-// cube.position.set(0,10,0);
-// client.scene.add(cube);
+const gumMaterial = new THREE.MeshBasicMaterial({ color: 0xff8080 });
 const meshes: THREE.Mesh[] = [];
 const meshWrappers: THREE.Group[] = [];
 
