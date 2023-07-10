@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Mouse, rt } from "./types";
 import SceneInit from "../SceneInit";
-import TransformControl from "../Controls/TransformControl/TransformControl";
+import TransformControl from "../Controls/TransformControl";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 
 class MouseEvents {
@@ -28,8 +28,6 @@ class MouseEvents {
     this.transformControl = TransformControl(this.main);
     this.highLight = this.highLight.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
-    this.selectWrapper = this.selectWrapper.bind(this);
-    this.onMouseDoubleClick = this.onMouseDoubleClick.bind(this);
   }
 
   private onMouseMove(event: MouseEvent): void {
@@ -53,36 +51,6 @@ class MouseEvents {
     });
   }
 
-  private onMouseDoubleClick(event: MouseEvent): void {
-    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    this.raycaster.setFromCamera(this.mouse, this.main.camera);
-
-    this.intersects = this.raycaster.intersectObjects(this.wrappers, true);
-
-    if (this.intersects.length > 0) {
-      this.intersectObject = this.intersects[0].object;
-    } else {
-      this.intersectObject = null;
-    }
-    for (let i = 0; i < this.meshes.length; i++) {
-      const mesh = this.meshes[i];
-      const wrapper = this.wrappers[i];
-      if (this.intersectObject && this.intersectObject.name === mesh.name) {
-        this.transformControl.attach(wrapper);
-        break;
-      }
-    }
-  }
-  public selectWrapper() {
-    this.main.renderer.domElement.addEventListener(
-      "dblclick",
-      this.onMouseDoubleClick,
-      false
-    );
-  }
-
   public highLight(): void {
     this.main.renderer.domElement.addEventListener(
       "mousemove",
@@ -90,36 +58,6 @@ class MouseEvents {
       false
     );
   }
-
-  // public async selectMesh(): Promise<THREE.Group> {
-  //   return new Promise((resolve) => {
-  //     const onDblClick = (event: MouseEvent) => {
-  //       let selected: THREE.Group = new THREE.Group();
-  //       this.mouse.set(
-  //         (event.clientX / this.main.renderer.domElement.clientWidth) * 2 - 1,
-  //         -(event.clientY / this.main.renderer.domElement.clientHeight) * 2 + 1
-  //       );
-  //       this.raycaster.setFromCamera(this.mouse, this.main.camera);
-  //       this.intersects = this.raycaster.intersectObjects(this.meshes, false);
-  //       if (this.intersects.length > 0) {
-  //         this.intersectObject = this.intersects[0].object;
-  //       } else {
-  //         this.intersectObject = null;
-  //       }
-  //       for (let i = 0; i < this.meshes.length; i++) {
-  //         const mesh = this.meshes[i];
-  //         const wrapper = this.wrappers[i];
-  //         if (this.intersectObject && this.intersectObject.name === mesh.name) {
-  //           selected = wrapper;
-  //           break;
-  //         }
-  //       }
-  //       resolve(selected);
-  //     };
-  //     console.log('here')
-  //     this.main.renderer.domElement.addEventListener('dblclick', onDblClick, false);
-  //   });
-  // }
 }
 
 export default MouseEvents;

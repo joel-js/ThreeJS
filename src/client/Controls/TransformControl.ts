@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
-import SceneInit from "../../SceneInit";
+import SceneInit from "../SceneInit";
 const TransformControl = (client: SceneInit, otherControls?: (OrbitControls | TransformControls)[]): TransformControls => {
   
   const transformControls = new TransformControls(client.camera, client.renderer.domElement);
