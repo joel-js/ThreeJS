@@ -2,7 +2,7 @@ import * as THREE from "three";
 import Stats from "three/examples/jsm/libs/stats.module";
 import plyLoader from "./Loaders/plyLoader";
 import { files } from "./Utils/constants";
-// import { rt } from './Utils/types';
+import { Mesh, Wrapper } from './Utils/types';
 import SceneInit from "./SceneInit";
 import App from "./App";
 
@@ -15,8 +15,8 @@ const mainWrapper = new THREE.Group();
 
 const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 const gumMaterial = new THREE.MeshBasicMaterial({ color: 0xff8080 });
-const meshes: THREE.Mesh[] = [];
-const meshWrappers: THREE.Group[] = [];
+const meshes: Mesh[] = [];
+const meshWrappers: Wrapper[] = [];
 
 plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {

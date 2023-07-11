@@ -2,12 +2,12 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import SceneInit from "../SceneInit";
-import { rt, Mouse } from "../Utils/types";
-
+import { rt, Mouse, Mesh, Wrapper } from "../Utils/types";
+import { VectorMap, DoublyLinkedList } from "../Utils/constants";
 class TeethMovements {
   private main: SceneInit;
-  private meshes: Array<THREE.Mesh>;
-  private wrappers: Array<THREE.Group>;
+  private meshes: Array<Mesh>;
+  private wrappers: Array<Wrapper>;
   private raycaster: THREE.Raycaster;
   private mouse: Mouse;
   private intersects: THREE.Intersection[];
@@ -32,20 +32,38 @@ class TeethMovements {
     this.mesial = this.mesial.bind(this);
     this.distal = this.distal.bind(this);
   }
-
-  private mesial(wrapper: THREE.Group) {
-    console.log('here@mesial', wrapper.position,  wrapper.getWorldDirection(new THREE.Vector3(0, 0, 5)));
-    wrapper.position.add(new THREE.Vector3(0, 0, 5));
+  private findAxis(wrapper: Wrapper): [THREE.Vector3, THREE.Vector3] {
+    const name: string = wrapper.name;
+    const list = new DoublyLinkedList(VectorMap);
+    const { prev, next } = list.getPrevAndNext(name);
+    console.log('prev, next', {prev, next});
+    const vector: [THREE.Vector3, THREE.Vector3] = [new THREE.Vector3(), new THREE.Vector3()];
+    for(let i =0; i<this.wrappers.length; i++) {
+      if(prev && this.wrappers[i].name === prev) {
+        vector[0] = new THREE.Vector3().subVectors(this.wrappers[i].position, wrapper.position);
+        console.log('prev => ', wrapper.position, this.wrappers[i].position);
+      }
+      if(next && this.wrappers[i].name === next) {
+        vector[1] = new THREE.Vector3().subVectors(this.wrappers[i].position, wrapper.position);
+        console.log('next => ', this.wrappers[i].position, wrapper.position);
+      }
+    }
+    return vector;
+  }
+  private mesial(wrapper: Wrapper) {
+    console.log('here@mesial', wrapper.position);
+    wrapper.position.add(this.findAxis(wrapper)[1].multiplyScalar(0.1));
     console.log('here@mesial2', wrapper.position);
 
   }
-  private distal(wrapper: THREE.Group) {
+  private distal(wrapper: Wrapper) {
     console.log('here@distal', wrapper.position,  wrapper.getWorldDirection(new THREE.Vector3(0, 0, 0)));
-    wrapper.position.add(new THREE.Vector3(0, 5, 5));
+    this.findAxis(wrapper);
+    wrapper.position.add( this.findAxis(wrapper)[0].multiplyScalar(0.1));
     console.log('here@distal2', wrapper.position);
   }
 
-  private moveTeeth(wrapper: THREE.Group) {
+  private moveTeeth(wrapper: Wrapper) {
     if (this.keydownListener) {
       window.removeEventListener("keydown", this.keydownListener);
     }
