@@ -2,8 +2,9 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import SceneInit from "../SceneInit";
-import { rt, Mouse, Mesh, Wrapper } from "../Utils/types";
-import { VectorMap, DoublyLinkedList } from "../Utils/constants";
+import { rt, Mouse, Mesh, Wrapper, WrapperLocalAxes } from "../Utils/types";
+import { VectorMap } from "../Utils/constants";
+import { DoublyLinkedList } from "../Utils/HelperFunctions";
 class TeethMovements {
   private main: SceneInit;
   private meshes: Array<Mesh>;
@@ -14,8 +15,12 @@ class TeethMovements {
   private intersectObject: THREE.Object3D | null;
   private otherControls: (OrbitControls | TransformControls)[];
   private keydownListener: ((event: KeyboardEvent) => void) | null;
-
-  constructor(main: SceneInit, { meshes, wrappers }: rt, otherControls ?: (OrbitControls | TransformControls)[]) {
+  private keyPressed:string ;
+  constructor(
+    main: SceneInit,
+    { meshes, wrappers }: rt,
+    otherControls?: (OrbitControls | TransformControls)[]
+  ) {
     this.main = main;
     this.meshes = meshes;
     this.wrappers = wrappers;
@@ -25,56 +30,97 @@ class TeethMovements {
     this.intersectObject = null;
     this.otherControls = otherControls || [];
     this.keydownListener = null;
-
+    this.keyPressed = '';
     this.execute = this.execute.bind(this);
     this.onMouseDoubleClick = this.onMouseDoubleClick.bind(this);
     this.moveTeeth = this.moveTeeth.bind(this);
     this.mesial = this.mesial.bind(this);
     this.distal = this.distal.bind(this);
+    this.clockWise = this.clockWise.bind(this);
+    this.antiClockWise = this.antiClockWise.bind(this);
   }
-  private findAxis(wrapper: Wrapper): [THREE.Vector3, THREE.Vector3] {
+
+  private findTranslateAxis(wrapper: Wrapper): WrapperLocalAxes {
     const name: string = wrapper.name;
     const list = new DoublyLinkedList(VectorMap);
     const { prev, next } = list.getPrevAndNext(name);
-    console.log('prev, next', {prev, next});
-    const vector: [THREE.Vector3, THREE.Vector3] = [new THREE.Vector3(), new THREE.Vector3()];
-    for(let i =0; i<this.wrappers.length; i++) {
-      if(prev && this.wrappers[i].name === prev) {
-        vector[0] = new THREE.Vector3().subVectors(this.wrappers[i].position, wrapper.position);
-        console.log('prev => ', wrapper.position, this.wrappers[i].position);
+    console.log("prev, next", { prev, next });
+    const vector: WrapperLocalAxes = {
+      prev: new THREE.Vector3(),
+      next: new THREE.Vector3(),
+    };
+    for (let i = 0; i < this.wrappers.length; i++) {
+      if (prev && this.wrappers[i].name === prev) {
+        vector.prev = new THREE.Vector3().subVectors(
+          this.wrappers[i].position,
+          wrapper.position
+        );
+        console.log("prev => ", wrapper.position, this.wrappers[i].position);
       }
-      if(next && this.wrappers[i].name === next) {
-        vector[1] = new THREE.Vector3().subVectors(this.wrappers[i].position, wrapper.position);
-        console.log('next => ', this.wrappers[i].position, wrapper.position);
+      if (next && this.wrappers[i].name === next) {
+        vector.next = new THREE.Vector3().subVectors(
+          this.wrappers[i].position,
+          wrapper.position
+        );
+        console.log("next => ", this.wrappers[i].position, wrapper.position);
       }
     }
     return vector;
   }
-  private mesial(wrapper: Wrapper) {
-    console.log('here@mesial', wrapper.position);
-    wrapper.position.add(this.findAxis(wrapper)[1].multiplyScalar(0.1));
-    console.log('here@mesial2', wrapper.position);
 
+  private mesial(wrapper: Wrapper) {
+    console.log("here@mesial", wrapper.position);
+    wrapper.position.add(this.findTranslateAxis(wrapper).next.multiplyScalar(0.1));
+    console.log("here@mesial2", wrapper.position);
   }
   private distal(wrapper: Wrapper) {
-    console.log('here@distal', wrapper.position,  wrapper.getWorldDirection(new THREE.Vector3(0, 0, 0)));
-    this.findAxis(wrapper);
-    wrapper.position.add( this.findAxis(wrapper)[0].multiplyScalar(0.1));
-    console.log('here@distal2', wrapper.position);
+    console.log(
+      "here@distal",
+      wrapper.position,
+      wrapper.getWorldDirection(new THREE.Vector3(0, 0, 0))
+    );
+    this.findTranslateAxis(wrapper);
+    wrapper.position.add(this.findTranslateAxis(wrapper).prev.multiplyScalar(0.1));
+    console.log("here@distal2", wrapper.position);
+  }
+
+  private clockWise(wrapper: Wrapper, axes: WrapperLocalAxes) {
+    const angle = Math.PI/18;
+    const axis = axes.next.normalize();
+    // const quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+    // wrapper.children[0].quaternion.multiplyQuaternions(quaternion, wrapper.children[0].quaternion);
+    wrapper.rotateOnAxis(axis,angle);
+
+  }
+  private antiClockWise(wrapper: Wrapper, axes: WrapperLocalAxes){
+    const angle = -Math.PI/18;
+    const axis = axes.next.normalize();
+    // const quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+    // wrapper.children[0].quaternion.multiplyQuaternions(quaternion, wrapper.children[0].quaternion);
+    wrapper.rotateOnAxis(axis,angle);
   }
 
   private moveTeeth(wrapper: Wrapper) {
     if (this.keydownListener) {
+      console.log('x =>',this.keydownListener);
       window.removeEventListener("keydown", this.keydownListener);
     }
 
     this.keydownListener = (event: KeyboardEvent) => {
       switch (event.key) {
-        case "ArrowUp":
+        case "w":
+          this.keyPressed = 'w';
           this.mesial(wrapper);
           break;
-        case "ArrowDown":
+        case "s":
+          console.log(this.keyPressed)
           this.distal(wrapper);
+          break;
+        case "a":
+          this.clockWise(wrapper, this.findTranslateAxis(wrapper));
+          break;
+        case "d":
+          this.antiClockWise(wrapper, this.findTranslateAxis(wrapper));
           break;
       }
     };
@@ -98,11 +144,11 @@ class TeethMovements {
       const mesh = this.meshes[i];
       const wrapper = this.wrappers[i];
       if (this.intersectObject && this.intersectObject.name === mesh.name) {
-        console.log('@dbl', wrapper);
+        console.log("@dbl", wrapper);
         // const vertices = mesh.geometry.attributes.position.array;
         // const faces = mesh.geometry.index?.array;
         this.moveTeeth(wrapper);
-        
+
         break;
       }
     }

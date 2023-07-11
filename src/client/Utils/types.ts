@@ -8,3 +8,8 @@ export type Mouse = THREE.Vector2 & {
   x: number;
   y: number;
 };
+
+export type WrapperLocalAxes = {
+  prev: THREE.Vector3,
+  next: THREE.Vector3
+};

@@ -18,6 +18,17 @@ const gumMaterial = new THREE.MeshBasicMaterial({ color: 0xff8080 });
 const meshes: Mesh[] = [];
 const meshWrappers: Wrapper[] = [];
 
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+const mesh = new THREE.Mesh(geometry, material2);
+client.scene.add(mesh);
+
+const axis = new THREE.Vector3(0, 1, 0); // Y-axis
+const angle = Math.PI;
+const quaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+mesh.quaternion.multiplyQuaternions(quaternion, mesh.quaternion);
+
+
 plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {
     result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
@@ -35,5 +46,6 @@ const animate = (): void => {
   client.controller.update();
   client.render();
   stats.update();
+  mesh.rotation.y += 0.01;
 };
 animate();
