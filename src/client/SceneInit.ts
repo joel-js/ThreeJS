@@ -1,10 +1,11 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 export default class SceneInit {
-  private _scene: THREE.Scene;
-  private _camera: THREE.PerspectiveCamera;
-  private _renderer: THREE.WebGLRenderer;
-
+  private readonly _scene: THREE.Scene;
+  private readonly _camera: THREE.PerspectiveCamera;
+  private readonly _renderer: THREE.WebGLRenderer;
+  private readonly _controller: OrbitControls;
   constructor() {
     this._scene =  new THREE.Scene();
     this._camera = new THREE.PerspectiveCamera(
@@ -12,8 +13,9 @@ export default class SceneInit {
       window.innerWidth / window.innerHeight,
       0.1,
       1000
-    );
-    this._renderer = new THREE.WebGLRenderer();
+      );
+      this._renderer = new THREE.WebGLRenderer();
+      this._controller = new OrbitControls(this.camera, this.renderer.domElement);
   }
 
   public get scene(): THREE.Scene {
@@ -27,6 +29,9 @@ export default class SceneInit {
   public get renderer(): THREE.WebGLRenderer{
     return this._renderer;
   }
+  public get controller(): OrbitControls{
+    return this._controller;
+  }
   public render = () => {
     this._renderer.render(this._scene, this._camera);
   }
@@ -39,7 +44,6 @@ export default class SceneInit {
   }
   public initialize() {
     this.camera?.position.set(10, 10, 10);
-
     this._renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this._renderer.domElement);
 
