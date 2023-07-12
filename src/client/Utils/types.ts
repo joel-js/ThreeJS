@@ -13,3 +13,10 @@ export type WrapperLocalAxes = {
   prev: THREE.Vector3,
   next: THREE.Vector3
 };
+
+export type teethCalcType = {
+  [key: string]: {
+    localY: THREE.Vector3;
+    translateAxis: WrapperLocalAxes;
+  };
+};

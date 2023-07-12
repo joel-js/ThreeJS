@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import { Wrapper, WrapperLocalAxes } from "./types";
+import { Wrapper, WrapperLocalAxes, rt, teethCalcType } from "./types";
 import { VectorMap } from './constants';
+import SceneInit from '../SceneInit';
 interface Element {
   value: any;
   prev: Element | null;
@@ -63,6 +64,13 @@ export class DoublyLinkedList {
   }
 }
 
+export const Arrow = (main: SceneInit, vector: THREE.Vector3, color?: number) => {
+  const arrow = new THREE.ArrowHelper(vector);
+  arrow.setLength(10);
+  arrow.setColor(color || 0xff00ff);
+  main.scene.add(arrow);
+}
+
 export const findTranslateAxis = (wrappers: Wrapper[],wrapper: Wrapper): WrapperLocalAxes => {
   const name: string = wrapper.name;
   const list = new DoublyLinkedList(VectorMap);
@@ -119,3 +127,14 @@ export const xantiClockWise = (wrapper: Wrapper, axis: THREE.Vector3) => {
   console.log('xantiClockWise: axis angle', normAxis, angle);
   wrapper.rotateOnAxis(normAxis,angle);
 }
+
+export const calculateTeeth = (wrappers: Wrapper[]): teethCalcType => {
+  let calc: teethCalcType ={};
+  wrappers.forEach((wrapper: THREE.Group, i: number) => {
+    calc[wrapper.name] = {
+      localY: getLocalY(wrapper),
+      translateAxis: findTranslateAxis(wrappers, wrapper),
+    };
+  })
+  return calc;
+};

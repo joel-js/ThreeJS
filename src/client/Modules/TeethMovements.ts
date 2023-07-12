@@ -2,13 +2,16 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import SceneInit from "../SceneInit";
-import { rt, Mouse, Mesh, Wrapper } from "../Utils/types";
+import { rt, Mouse, Mesh, Wrapper, teethCalcType } from "../Utils/types";
 import {
   findTranslateAxis,
   getLocalY,
   xclockWise,
   xantiClockWise,
+  calculateTeeth,
+  Arrow,
 } from "../Utils/HelperFunctions";
+
 class TeethMovements {
   private main: SceneInit;
   private meshes: Array<Mesh>;
@@ -18,6 +21,7 @@ class TeethMovements {
   private intersects: THREE.Intersection[];
   private intersectObject: THREE.Object3D | null;
   private otherControls: (OrbitControls | TransformControls)[];
+  private teethCalc: teethCalcType;
   private keydownListener: ((event: KeyboardEvent) => void) | null;
 
   constructor(
@@ -32,6 +36,7 @@ class TeethMovements {
     this.mouse = new THREE.Vector2();
     this.intersects = [];
     this.intersectObject = null;
+    this.teethCalc = calculateTeeth(this.wrappers);
     this.otherControls = otherControls || [];
     this.keydownListener = null;
     this.execute = this.execute.bind(this);
@@ -40,33 +45,50 @@ class TeethMovements {
   }
 
   private mesial(wrapper: Wrapper) {
+    console.log(this.teethCalc[wrapper.name].translateAxis.next);
+    // Arrow(this.main, this.teethCalc[wrapper.name].translateAxis.next);
     wrapper.position.add(
-      findTranslateAxis(this.wrappers, wrapper).next.multiplyScalar(0.1)
+      this.teethCalc[wrapper.name].translateAxis.next.multiplyScalar(0.1)
+      // findTranslateAxis(this.wrappers, wrapper).next.multiplyScalar(0.1)
     );
   }
 
   private distal(wrapper: Wrapper) {
     wrapper.position.add(
       findTranslateAxis(this.wrappers, wrapper).prev.multiplyScalar(0.1)
+      // this.teethCalc[wrapper.name].translateAxis.prev
     );
   }
 
   private buccal(wrapper: Wrapper) {
-    const buccalAxis: THREE.Vector3 = new THREE.Vector3().crossVectors(
-      getLocalY(wrapper),
-      findTranslateAxis(this.wrappers, wrapper).next
-    ).normalize();
-    console.log('buccal', buccalAxis);
+    const buccalAxis: THREE.Vector3 = new THREE.Vector3()
+      .crossVectors(
+        this.teethCalc[wrapper.name].localY,
+        this.teethCalc[wrapper.name].translateAxis.next
+      )
+      .normalize();
+    console.log("buccal", this.teethCalc[wrapper.name].translateAxis.next);
+    Arrow(this.main, buccalAxis);
     wrapper.position.add(buccalAxis);
   }
 
   private ligual(wrapper: Wrapper) {
-    wrapper.position.add(
-      new THREE.Vector3().crossVectors(
-        getLocalY(wrapper),
-        (findTranslateAxis(this.wrappers, wrapper).next).negate()
-      ).normalize()
+    Arrow(
+      this.main,
+      this.teethCalc[wrapper.name].translateAxis.next.negate(),
+      0xffff00
     );
+
+    const ligualAxis: THREE.Vector3 = new THREE.Vector3()
+      .crossVectors(
+        this.teethCalc[wrapper.name].localY,
+        this.teethCalc[wrapper.name].translateAxis.next
+      )
+      .negate()
+      .normalize();
+
+    Arrow(this.main, ligualAxis);
+    wrapper.position.add(ligualAxis);
   }
 
   private moveTeeth(wrapper: Wrapper) {
@@ -89,26 +111,26 @@ class TeethMovements {
           this.ligual(wrapper);
           break;
         case "z":
-          xclockWise(wrapper, findTranslateAxis(this.wrappers, wrapper).next);
+          xclockWise(wrapper, this.teethCalc[wrapper.name].translateAxis.next);
           break;
         case "x":
           xantiClockWise(
             wrapper,
-            findTranslateAxis(this.wrappers, wrapper).next
+            this.teethCalc[wrapper.name].translateAxis.next
           );
           break;
         case "r":
-          xclockWise(wrapper, getLocalY(wrapper));
+          xclockWise(wrapper, this.teethCalc[wrapper.name].localY);
           break;
         case "t":
-          xantiClockWise(wrapper, getLocalY(wrapper));
+          xantiClockWise(wrapper, this.teethCalc[wrapper.name].localY);
           break;
         case "g":
           xclockWise(
             wrapper,
             new THREE.Vector3().crossVectors(
-              getLocalY(wrapper),
-              findTranslateAxis(this.wrappers, wrapper).next
+              this.teethCalc[wrapper.name].localY,
+              this.teethCalc[wrapper.name].translateAxis.next
             )
           );
           break;
@@ -116,8 +138,8 @@ class TeethMovements {
           xantiClockWise(
             wrapper,
             new THREE.Vector3().crossVectors(
-              getLocalY(wrapper),
-              findTranslateAxis(this.wrappers, wrapper).next
+              this.teethCalc[wrapper.name].localY,
+              this.teethCalc[wrapper.name].translateAxis.next
             )
           );
           break;
