@@ -30,25 +30,27 @@ const meshWrappers: Wrapper[] = [];
 // const mesh = new THREE.Mesh(geometry, material2);
 // client.scene.add(mesh);
 // const axis = new THREE.Vector3(0, 0, 1); // Y-axis
-// const angle = Math.PI / 4;
+// const angle = Math.PI / 6;
 // mesh.rotateOnAxis(axis, angle);
-// console.log('mesh', mesh)
-// // Get the local Y axis
+// // console.log('mesh', mesh)
+// // // Get the local Y axis
 // const worldY = new THREE.Vector3(0, 1, 0); // Assuming Y is the local up direction
 // const localY = worldY.applyQuaternion(mesh.quaternion).normalize();
-// console.log(worldY);
-// const faceNormalsHelper = new THREE.FaceNormalsHelper(mesh, 1, 0x00ff00, 1);
-// const box = new THREE.Box3().setFromObject(mesh);
-// const center = box.getCenter(new THREE.Vector3());
-// const size = box.getSize(new THREE.Vector3());
-// const referenceVector = new THREE.Vector3(0, 1, 0); // Reference vector along the y-axis
-// const normal = new THREE.Vector3().crossVectors(size, referenceVector).normalize();
-// console.log(mesh);
-// console.log('Bounding Box Center:', center);
-// console.log('Bounding Box Size:', size);
-// console.log('Top Surface Normal:', normal);
+// // console.log(worldY);
+// // const faceNormalsHelper = new THREE.FaceNormalsHelper(mesh, 1, 0x00ff00, 1);
+// // const box = new THREE.Box3().setFromObject(mesh);
+// // const center = box.getCenter(new THREE.Vector3());
+// // const size = box.getSize(new THREE.Vector3());
+// // const referenceVector = new THREE.Vector3(0, 1, 0); // Reference vector along the y-axis
+// // const normal = new THREE.Vector3().crossVectors(size, referenceVector).normalize();
+// // console.log(mesh);
+// // console.log('Bounding Box Center:', center);
+// // console.log('Bounding Box Size:', size);
+// // console.log('Top Surface Normal:', normal);
 
-// const arrow = new THREE.ArrowHelper(localY);
+// const perpendicular = new THREE.Vector3().crossVectors(localY, new THREE.Vector3(0,0,1));
+
+// const arrow = new THREE.ArrowHelper(perpendicular);
 // arrow.setLength(10);
 // arrow.setColor(0xff00ff);
 // client.scene.add(arrow);

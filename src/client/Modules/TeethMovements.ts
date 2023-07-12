@@ -15,7 +15,7 @@ class TeethMovements {
   private intersectObject: THREE.Object3D | null;
   private otherControls: (OrbitControls | TransformControls)[];
   private keydownListener: ((event: KeyboardEvent) => void) | null;
-  private keyPressed:string ;
+
   constructor(
     main: SceneInit,
     { meshes, wrappers }: rt,
@@ -30,14 +30,9 @@ class TeethMovements {
     this.intersectObject = null;
     this.otherControls = otherControls || [];
     this.keydownListener = null;
-    this.keyPressed = '';
     this.execute = this.execute.bind(this);
     this.onMouseDoubleClick = this.onMouseDoubleClick.bind(this);
     this.moveTeeth = this.moveTeeth.bind(this);
-    this.mesial = this.mesial.bind(this);
-    this.distal = this.distal.bind(this);
-    this.clockWise = this.clockWise.bind(this);
-    this.antiClockWise = this.antiClockWise.bind(this);
   }
 
   private findTranslateAxis(wrapper: Wrapper): WrapperLocalAxes {
@@ -70,68 +65,73 @@ class TeethMovements {
   private getLocalY(wrapper: Wrapper): THREE.Vector3 {
     const worldY  = new THREE.Vector3(0, 1, 0);
     const localY = worldY.applyQuaternion(wrapper.quaternion);
-    // console.log('world', worldY, 'local', localY  );
+    console.log('localY ', localY);
     return localY;
   }
 
   private mesial(wrapper: Wrapper) {
-    // console.log("here@mesial", wrapper.position);
     wrapper.position.add(this.findTranslateAxis(wrapper).next.multiplyScalar(0.1));
-    // console.log("here@mesial2", wrapper.position);
   }
 
   private distal(wrapper: Wrapper) {
-    // // console.log(
-    //   "here@distal",
-    //   wrapper.position,
-    //   wrapper.getWorldDirection(new THREE.Vector3(0, 0, 0))
-    // );
-    this.findTranslateAxis(wrapper);
     wrapper.position.add(this.findTranslateAxis(wrapper).prev.multiplyScalar(0.1));
-    // console.log("here@distal2", wrapper.position);
   }
 
   private clockWise(wrapper: Wrapper, axes: WrapperLocalAxes) {
     const angle = Math.PI/18;
     const axis = axes.next.normalize();
-    // console.log('axis: ',axis);
     wrapper.rotateOnAxis(axis,angle);
 
   }
   private antiClockWise(wrapper: Wrapper, axes: WrapperLocalAxes){
-    const angle = -(Math.PI/12);
+    const angle = -(Math.PI/18);
     const axis = axes.prev.normalize();
+    wrapper.rotateOnAxis(axis,angle);
+  }
+  private xclockWise(wrapper: Wrapper, axes: THREE.Vector3) {
+    const angle = Math.PI/18;
+    const axis = axes.normalize();
+    console.log('xclockWise: axis angle', axis, angle);
+    wrapper.rotateOnAxis(axis,angle);
+
+  }
+  private xantiClockWise(wrapper: Wrapper, axes: THREE.Vector3){
+    const angle = -Math.PI/18;
+    const axis = axes.normalize();
+    console.log('xantiClockWise: axis angle', axis, angle);
     wrapper.rotateOnAxis(axis,angle);
   }
   private moveTeeth(wrapper: Wrapper) {
     if (this.keydownListener) {
-      // console.log('x =>',this.keydownListener);
       window.removeEventListener("keydown", this.keydownListener);
     }
 
     this.keydownListener = (event: KeyboardEvent) => {
       switch (event.key) {
         case "w":
-          this.keyPressed = 'w';
           this.mesial(wrapper);
           break;
         case "s":
-          // console.log(this.keyPressed)
           this.distal(wrapper);
           break;
         case "a":
-          this.clockWise(wrapper, this.findTranslateAxis(wrapper));
+          this.xclockWise(wrapper, this.findTranslateAxis(wrapper).next);
           break;
         case "d":
-          this.antiClockWise(wrapper, this.findTranslateAxis(wrapper));
+          this.xantiClockWise(wrapper, this.findTranslateAxis(wrapper).next);
           break;
         case "r":
-          this.clockWise(wrapper, { prev: new THREE.Vector3() ,next: this.getLocalY(wrapper)});
-          // wrapper.rotateY(Math.PI / 18);
+          this.xclockWise(wrapper, this.getLocalY(wrapper));
           break;
         case "t":
-          this.antiClockWise(wrapper, { next: new THREE.Vector3() , prev: this.getLocalY(wrapper)});
-          // wrapper.rotateY(-Math.PI / 18)
+          this.xantiClockWise(wrapper, this.getLocalY(wrapper));
+          break;
+        case "g":
+          this.xclockWise(wrapper, new THREE.Vector3().crossVectors(this.getLocalY(wrapper), this.findTranslateAxis(wrapper).next));
+          break;
+        case "h":
+          this.xantiClockWise(wrapper,new THREE.Vector3().crossVectors(this.getLocalY(wrapper), this.findTranslateAxis(wrapper).next));
+          break;
       }
     };
     window.addEventListener("keydown", this.keydownListener);
