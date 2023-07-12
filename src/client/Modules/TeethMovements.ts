@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import SceneInit from "../SceneInit";
-import { rt, Mouse, Mesh, Wrapper } from "../Utils/types";
+import { rt, Mouse, Mesh, Wrapper, V3 } from "../Utils/types";
 import {
   findTranslateAxis,
   getLocalY,
@@ -10,6 +10,7 @@ import {
   xantiClockWise,
   negativeVector,
 } from "../Utils/HelperFunctions";
+
 class TeethMovements {
   private main: SceneInit;
   private meshes: Array<Mesh>;
@@ -18,7 +19,7 @@ class TeethMovements {
   private mouse: Mouse;
   private intersects: THREE.Intersection[];
   private intersectObject: THREE.Object3D | null;
-  private buccalLigualAxis: THREE.Vector3;
+  private buccalLigualAxis: V3;
   private otherControls: (OrbitControls | TransformControls)[];
   private keydownListener: ((event: KeyboardEvent) => void) | null;
 
@@ -55,7 +56,7 @@ class TeethMovements {
   }
 
   private buccal(wrapper: Wrapper) {
-    const buccalAxis: THREE.Vector3 = new THREE.Vector3()
+    const buccalAxis: V3 = new THREE.Vector3()
       .crossVectors(
         getLocalY(wrapper),
         findTranslateAxis(this.wrappers, wrapper).next
@@ -69,7 +70,7 @@ class TeethMovements {
   }
 
   private ligual(wrapper: Wrapper) {
-    const ligualAxis: THREE.Vector3 = new THREE.Vector3().crossVectors(
+    const ligualAxis: V3 = new THREE.Vector3().crossVectors(
       getLocalY(wrapper),
       findTranslateAxis(this.wrappers, wrapper).next.normalize()
     );

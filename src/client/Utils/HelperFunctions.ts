@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Wrapper, WrapperLocalAxes } from "./types";
+import { Wrapper, WrapperLocalAxes,V3 } from "./types";
 import { VectorMap } from './constants';
 interface Element {
   value: any;
@@ -89,7 +89,7 @@ export const findTranslateAxis = (wrappers: Wrapper[],wrapper: Wrapper): Wrapper
   return vector;
 }
 
-export const getLocalY = (wrapper: Wrapper): THREE.Vector3  => {
+export const getLocalY = (wrapper: Wrapper): V3  => {
   const worldY  = new THREE.Vector3(0, 1, 0);
   const localY = worldY.applyQuaternion(wrapper.quaternion);
   console.log('localY ', localY);
@@ -106,18 +106,18 @@ export const antiClockWise =(wrapper: Wrapper, axes: WrapperLocalAxes) => {
   const axis = axes.prev.normalize();
   wrapper.rotateOnAxis(axis,angle);
 }
-export const xclockWise = (wrapper: Wrapper, axis: THREE.Vector3) => {
+export const xclockWise = (wrapper: Wrapper, axis: V3) => {
   const angle = Math.PI/18;
   const normAxis = axis.normalize();
   console.log('xclockWise: axis angle', normAxis, angle);
   wrapper.rotateOnAxis(normAxis,angle);
 
 }
-export const xantiClockWise = (wrapper: Wrapper, axis: THREE.Vector3) => {
+export const xantiClockWise = (wrapper: Wrapper, axis: V3) => {
   const angle = -Math.PI/18;
   const normAxis = axis.normalize();
   console.log('xantiClockWise: axis angle', normAxis, angle);
   wrapper.rotateOnAxis(normAxis,angle);
 }
 
-export const negativeVector = (v: THREE.Vector3): THREE.Vector3 => new THREE.Vector3(-v.x, -v.y, -v.z); 
+export const negativeVector = (v: V3): V3 => new THREE.Vector3(-v.x, -v.y, -v.z); 
