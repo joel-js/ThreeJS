@@ -1,3 +1,6 @@
+import * as THREE from 'three';
+import { Wrapper, WrapperLocalAxes } from "./types";
+import { VectorMap } from './constants';
 interface Element {
   value: any;
   prev: Element | null;
@@ -58,4 +61,61 @@ export class DoublyLinkedList {
 
     return { prev: null, next: null };
   }
+}
+
+export const findTranslateAxis = (wrappers: Wrapper[],wrapper: Wrapper): WrapperLocalAxes => {
+  const name: string = wrapper.name;
+  const list = new DoublyLinkedList(VectorMap);
+  const { prev, next } = list.getPrevAndNext(name);
+  const vector: WrapperLocalAxes = {
+    prev: new THREE.Vector3(),
+    next: new THREE.Vector3(),
+  };
+  for (let i = 0; i < wrappers.length; i++) {
+    if (prev && wrappers[i].name === prev) {
+      vector.prev = new THREE.Vector3().subVectors(
+        wrappers[i].position,
+        wrapper.position
+      );
+      // console.log("prev => ", wrapper.position, this.wrappers[i].position);
+    }
+    if (next && wrappers[i].name === next) {
+      vector.next = new THREE.Vector3().subVectors(
+        wrappers[i].position,
+        wrapper.position
+      );
+    }
+  }
+  return vector;
+}
+
+export const getLocalY = (wrapper: Wrapper): THREE.Vector3  => {
+  const worldY  = new THREE.Vector3(0, 1, 0);
+  const localY = worldY.applyQuaternion(wrapper.quaternion);
+  console.log('localY ', localY);
+  return localY;
+}
+export const clockWise = (wrapper: Wrapper, axes: WrapperLocalAxes) => {
+  const angle = Math.PI/18;
+  const axis = axes.next.normalize();
+  wrapper.rotateOnAxis(axis,angle);
+
+}
+export const antiClockWise =(wrapper: Wrapper, axes: WrapperLocalAxes) => {
+  const angle = -(Math.PI/18);
+  const axis = axes.prev.normalize();
+  wrapper.rotateOnAxis(axis,angle);
+}
+export const xclockWise = (wrapper: Wrapper, axis: THREE.Vector3) => {
+  const angle = Math.PI/18;
+  const normAxis = axis.normalize();
+  console.log('xclockWise: axis angle', normAxis, angle);
+  wrapper.rotateOnAxis(normAxis,angle);
+
+}
+export const xantiClockWise = (wrapper: Wrapper, axis: THREE.Vector3) => {
+  const angle = -Math.PI/18;
+  const normAxis = axis.normalize();
+  console.log('xantiClockWise: axis angle', normAxis, angle);
+  wrapper.rotateOnAxis(normAxis,angle);
 }

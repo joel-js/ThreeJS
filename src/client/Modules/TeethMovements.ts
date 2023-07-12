@@ -2,9 +2,13 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import SceneInit from "../SceneInit";
-import { rt, Mouse, Mesh, Wrapper, WrapperLocalAxes } from "../Utils/types";
-import { VectorMap } from "../Utils/constants";
-import { DoublyLinkedList } from "../Utils/HelperFunctions";
+import { rt, Mouse, Mesh, Wrapper } from "../Utils/types";
+import {
+  findTranslateAxis,
+  getLocalY,
+  xclockWise,
+  xantiClockWise,
+} from "../Utils/HelperFunctions";
 class TeethMovements {
   private main: SceneInit;
   private meshes: Array<Mesh>;
@@ -35,72 +39,36 @@ class TeethMovements {
     this.moveTeeth = this.moveTeeth.bind(this);
   }
 
-  private findTranslateAxis(wrapper: Wrapper): WrapperLocalAxes {
-    const name: string = wrapper.name;
-    const list = new DoublyLinkedList(VectorMap);
-    const { prev, next } = list.getPrevAndNext(name);
-    const vector: WrapperLocalAxes = {
-      prev: new THREE.Vector3(),
-      next: new THREE.Vector3(),
-    };
-    for (let i = 0; i < this.wrappers.length; i++) {
-      if (prev && this.wrappers[i].name === prev) {
-        vector.prev = new THREE.Vector3().subVectors(
-          this.wrappers[i].position,
-          wrapper.position
-        );
-        // console.log("prev => ", wrapper.position, this.wrappers[i].position);
-      }
-      if (next && this.wrappers[i].name === next) {
-        vector.next = new THREE.Vector3().subVectors(
-          this.wrappers[i].position,
-          wrapper.position
-        );
-        // console.log("next => ", this.wrappers[i].position, wrapper.position);
-      }
-    }
-    return vector;
-  }
-
-  private getLocalY(wrapper: Wrapper): THREE.Vector3 {
-    const worldY  = new THREE.Vector3(0, 1, 0);
-    const localY = worldY.applyQuaternion(wrapper.quaternion);
-    console.log('localY ', localY);
-    return localY;
-  }
-
   private mesial(wrapper: Wrapper) {
-    wrapper.position.add(this.findTranslateAxis(wrapper).next.multiplyScalar(0.1));
+    wrapper.position.add(
+      findTranslateAxis(this.wrappers, wrapper).next.multiplyScalar(0.1)
+    );
   }
 
   private distal(wrapper: Wrapper) {
-    wrapper.position.add(this.findTranslateAxis(wrapper).prev.multiplyScalar(0.1));
+    wrapper.position.add(
+      findTranslateAxis(this.wrappers, wrapper).prev.multiplyScalar(0.1)
+    );
   }
 
-  private clockWise(wrapper: Wrapper, axes: WrapperLocalAxes) {
-    const angle = Math.PI/18;
-    const axis = axes.next.normalize();
-    wrapper.rotateOnAxis(axis,angle);
+  private buccal(wrapper: Wrapper) {
+    const buccalAxis: THREE.Vector3 = new THREE.Vector3().crossVectors(
+      getLocalY(wrapper),
+      findTranslateAxis(this.wrappers, wrapper).next
+    ).normalize();
+    console.log('buccal', buccalAxis);
+    wrapper.position.add(buccalAxis);
+  }
 
+  private ligual(wrapper: Wrapper) {
+    wrapper.position.add(
+      new THREE.Vector3().crossVectors(
+        getLocalY(wrapper),
+        (findTranslateAxis(this.wrappers, wrapper).next).negate()
+      ).normalize()
+    );
   }
-  private antiClockWise(wrapper: Wrapper, axes: WrapperLocalAxes){
-    const angle = -(Math.PI/18);
-    const axis = axes.prev.normalize();
-    wrapper.rotateOnAxis(axis,angle);
-  }
-  private xclockWise(wrapper: Wrapper, axes: THREE.Vector3) {
-    const angle = Math.PI/18;
-    const axis = axes.normalize();
-    console.log('xclockWise: axis angle', axis, angle);
-    wrapper.rotateOnAxis(axis,angle);
 
-  }
-  private xantiClockWise(wrapper: Wrapper, axes: THREE.Vector3){
-    const angle = -Math.PI/18;
-    const axis = axes.normalize();
-    console.log('xantiClockWise: axis angle', axis, angle);
-    wrapper.rotateOnAxis(axis,angle);
-  }
   private moveTeeth(wrapper: Wrapper) {
     if (this.keydownListener) {
       window.removeEventListener("keydown", this.keydownListener);
@@ -115,22 +83,43 @@ class TeethMovements {
           this.distal(wrapper);
           break;
         case "a":
-          this.xclockWise(wrapper, this.findTranslateAxis(wrapper).next);
+          this.buccal(wrapper);
           break;
         case "d":
-          this.xantiClockWise(wrapper, this.findTranslateAxis(wrapper).next);
+          this.ligual(wrapper);
+          break;
+        case "z":
+          xclockWise(wrapper, findTranslateAxis(this.wrappers, wrapper).next);
+          break;
+        case "x":
+          xantiClockWise(
+            wrapper,
+            findTranslateAxis(this.wrappers, wrapper).next
+          );
           break;
         case "r":
-          this.xclockWise(wrapper, this.getLocalY(wrapper));
+          xclockWise(wrapper, getLocalY(wrapper));
           break;
         case "t":
-          this.xantiClockWise(wrapper, this.getLocalY(wrapper));
+          xantiClockWise(wrapper, getLocalY(wrapper));
           break;
         case "g":
-          this.xclockWise(wrapper, new THREE.Vector3().crossVectors(this.getLocalY(wrapper), this.findTranslateAxis(wrapper).next));
+          xclockWise(
+            wrapper,
+            new THREE.Vector3().crossVectors(
+              getLocalY(wrapper),
+              findTranslateAxis(this.wrappers, wrapper).next
+            )
+          );
           break;
         case "h":
-          this.xantiClockWise(wrapper,new THREE.Vector3().crossVectors(this.getLocalY(wrapper), this.findTranslateAxis(wrapper).next));
+          xantiClockWise(
+            wrapper,
+            new THREE.Vector3().crossVectors(
+              getLocalY(wrapper),
+              findTranslateAxis(this.wrappers, wrapper).next
+            )
+          );
           break;
       }
     };
@@ -154,12 +143,7 @@ class TeethMovements {
       const mesh = this.meshes[i];
       const wrapper = this.wrappers[i];
       if (this.intersectObject && this.intersectObject.name === mesh.name) {
-        // console.log("@dbl", wrapper);
-        const vertices = mesh.geometry.attributes.position.array;
-        const faces = mesh.geometry.index?.array;
-        // console.log('faces', faces);
         this.moveTeeth(wrapper);
-
         break;
       }
     }
