@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import SceneInit from "../SceneInit";
-import { rt, Mouse, Mesh, Wrapper, V3 } from "../Utils/types";
+import { Wrapper, V3 } from "../Utils/types";
 import {
   findTranslateAxis,
   getLocalY,
@@ -13,30 +13,21 @@ import {
 
 class TeethMovements {
   private main: SceneInit;
-  private meshes: Array<Mesh>;
-  private wrappers: Array<Wrapper>;
-  private raycaster: THREE.Raycaster;
-  private mouse: Mouse;
-  private intersects: THREE.Intersection[];
-  private intersectObject: THREE.Object3D | null;
   private buccalLigualAxis: V3;
   private otherControls: (OrbitControls | TransformControls)[];
+  private intersects: THREE.Intersection[];
+  private intersectObject: THREE.Object3D | null;
   private keydownListener: ((event: KeyboardEvent) => void) | null;
 
   constructor(
     main: SceneInit,
-    { meshes, wrappers }: rt,
     otherControls?: (OrbitControls | TransformControls)[]
   ) {
     this.main = main;
-    this.meshes = meshes;
-    this.wrappers = wrappers;
-    this.raycaster = new THREE.Raycaster();
-    this.mouse = new THREE.Vector2();
-    this.intersects = [];
-    this.intersectObject = null;
     this.otherControls = otherControls || [];
     this.buccalLigualAxis = new THREE.Vector3();
+    this.intersects = [];
+    this.intersectObject = null;
     this.keydownListener = null;
     this.execute = this.execute.bind(this);
     this.onMouseDoubleClick = this.onMouseDoubleClick.bind(this);
@@ -45,13 +36,13 @@ class TeethMovements {
 
   private mesial(wrapper: Wrapper) {
     wrapper.position.add(
-      findTranslateAxis(this.wrappers, wrapper).next.multiplyScalar(0.1)
+      findTranslateAxis(this.main.wrappers, wrapper).next.multiplyScalar(0.1)
     );
   }
 
   private distal(wrapper: Wrapper) {
     wrapper.position.add(
-      findTranslateAxis(this.wrappers, wrapper).prev.multiplyScalar(0.1)
+      findTranslateAxis(this.main.wrappers, wrapper).prev.multiplyScalar(0.1)
     );
   }
 
@@ -59,7 +50,7 @@ class TeethMovements {
     const buccalAxis: V3 = new THREE.Vector3()
       .crossVectors(
         getLocalY(wrapper),
-        findTranslateAxis(this.wrappers, wrapper).next
+        findTranslateAxis(this.main.wrappers, wrapper).next
       )
       .normalize();
     console.log("buccal", buccalAxis);
@@ -72,7 +63,7 @@ class TeethMovements {
   private ligual(wrapper: Wrapper) {
     const ligualAxis: V3 = new THREE.Vector3().crossVectors(
       getLocalY(wrapper),
-      findTranslateAxis(this.wrappers, wrapper).next.normalize()
+      findTranslateAxis(this.main.wrappers, wrapper).next.normalize()
     );
     if (this.buccalLigualAxis.length() === 0) {
       this.buccalLigualAxis = ligualAxis;
@@ -100,12 +91,12 @@ class TeethMovements {
           this.ligual(wrapper);
           break;
         case "z":
-          xclockWise(wrapper, findTranslateAxis(this.wrappers, wrapper).next);
+          xclockWise(wrapper, findTranslateAxis(this.main.wrappers, wrapper).next);
           break;
         case "x":
           xantiClockWise(
             wrapper,
-            findTranslateAxis(this.wrappers, wrapper).next
+            findTranslateAxis(this.main.wrappers, wrapper).next
           );
           break;
         case "r":
@@ -119,7 +110,7 @@ class TeethMovements {
             wrapper,
             new THREE.Vector3().crossVectors(
               getLocalY(wrapper),
-              findTranslateAxis(this.wrappers, wrapper).next
+              findTranslateAxis(this.main.wrappers, wrapper).next
             )
           );
           break;
@@ -128,7 +119,7 @@ class TeethMovements {
             wrapper,
             new THREE.Vector3().crossVectors(
               getLocalY(wrapper),
-              findTranslateAxis(this.wrappers, wrapper).next
+              findTranslateAxis(this.main.wrappers, wrapper).next
             )
           );
           break;
@@ -138,21 +129,21 @@ class TeethMovements {
   }
 
   private onMouseDoubleClick(event: MouseEvent): void {
-    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    this.main.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.main.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-    this.raycaster.setFromCamera(this.mouse, this.main.camera);
+    this.main.raycaster.setFromCamera(this.main.mouse, this.main.camera);
 
-    this.intersects = this.raycaster.intersectObjects(this.wrappers, true);
+    this.intersects = this.main.raycaster.intersectObjects(this.main.wrappers, true);
 
     if (this.intersects.length > 0) {
       this.intersectObject = this.intersects[0].object;
     } else {
       this.intersectObject = null;
     }
-    for (let i = 0; i < this.meshes.length; i++) {
-      const mesh = this.meshes[i];
-      const wrapper = this.wrappers[i];
+    for (let i = 0; i < this.main.meshes.length; i++) {
+      const mesh = this.main.meshes[i];
+      const wrapper = this.main.wrappers[i];
       if (this.intersectObject && this.intersectObject.name === mesh.name) {
         this.moveTeeth(wrapper);
         break;

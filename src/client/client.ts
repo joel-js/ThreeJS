@@ -59,8 +59,10 @@ const meshWrappers: Wrapper[] = [];
 
 plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {
+    client.meshes = result.meshes;
+    client.wrappers = result.wrappers;
     result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
-    App(client, result);
+    App(client);
   })
   .catch((error) => {
     console.error('Error loading PLY models:', error);
