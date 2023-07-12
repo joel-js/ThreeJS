@@ -119,3 +119,5 @@ export const xantiClockWise = (wrapper: Wrapper, axis: THREE.Vector3) => {
   console.log('xantiClockWise: axis angle', normAxis, angle);
   wrapper.rotateOnAxis(normAxis,angle);
 }
+
+export const negativeVector = (v: THREE.Vector3): THREE.Vector3 => new THREE.Vector3(-v.x, -v.y, -v.z); 

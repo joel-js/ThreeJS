@@ -8,6 +8,7 @@ import {
   getLocalY,
   xclockWise,
   xantiClockWise,
+  negativeVector,
 } from "../Utils/HelperFunctions";
 class TeethMovements {
   private main: SceneInit;
@@ -17,6 +18,7 @@ class TeethMovements {
   private mouse: Mouse;
   private intersects: THREE.Intersection[];
   private intersectObject: THREE.Object3D | null;
+  private buccalLigualAxis: THREE.Vector3;
   private otherControls: (OrbitControls | TransformControls)[];
   private keydownListener: ((event: KeyboardEvent) => void) | null;
 
@@ -33,6 +35,7 @@ class TeethMovements {
     this.intersects = [];
     this.intersectObject = null;
     this.otherControls = otherControls || [];
+    this.buccalLigualAxis = new THREE.Vector3();
     this.keydownListener = null;
     this.execute = this.execute.bind(this);
     this.onMouseDoubleClick = this.onMouseDoubleClick.bind(this);
@@ -52,21 +55,28 @@ class TeethMovements {
   }
 
   private buccal(wrapper: Wrapper) {
-    const buccalAxis: THREE.Vector3 = new THREE.Vector3().crossVectors(
-      getLocalY(wrapper),
-      findTranslateAxis(this.wrappers, wrapper).next
-    ).normalize();
-    console.log('buccal', buccalAxis);
-    wrapper.position.add(buccalAxis);
+    const buccalAxis: THREE.Vector3 = new THREE.Vector3()
+      .crossVectors(
+        getLocalY(wrapper),
+        findTranslateAxis(this.wrappers, wrapper).next
+      )
+      .normalize();
+    console.log("buccal", buccalAxis);
+    if (this.buccalLigualAxis.length() === 0) {
+      this.buccalLigualAxis = buccalAxis;
+    }
+    wrapper.position.add(this.buccalLigualAxis);
   }
 
   private ligual(wrapper: Wrapper) {
-    wrapper.position.add(
-      new THREE.Vector3().crossVectors(
-        getLocalY(wrapper),
-        (findTranslateAxis(this.wrappers, wrapper).next).negate()
-      ).normalize()
+    const ligualAxis: THREE.Vector3 = new THREE.Vector3().crossVectors(
+      getLocalY(wrapper),
+      findTranslateAxis(this.wrappers, wrapper).next.normalize()
     );
+    if (this.buccalLigualAxis.length() === 0) {
+      this.buccalLigualAxis = ligualAxis;
+    }
+    wrapper.position.add(negativeVector(this.buccalLigualAxis));
   }
 
   private moveTeeth(wrapper: Wrapper) {

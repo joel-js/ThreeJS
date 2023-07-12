@@ -49,6 +49,8 @@ const meshWrappers: Wrapper[] = [];
 // // console.log('Top Surface Normal:', normal);
 
 // const perpendicular = new THREE.Vector3().crossVectors(localY, new THREE.Vector3(0,0,1));
+// const perpendicular = new THREE.Vector3(0,0,0);
+// console.log('perpendicular', perpendicular.length());
 
 // const arrow = new THREE.ArrowHelper(perpendicular);
 // arrow.setLength(10);
