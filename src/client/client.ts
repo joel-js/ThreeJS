@@ -52,10 +52,16 @@ const meshWrappers: Wrapper[] = [];
 // const perpendicular = new THREE.Vector3(0,0,0);
 // console.log('perpendicular', perpendicular.length());
 
-// const arrow = new THREE.ArrowHelper(perpendicular);
-// arrow.setLength(10);
-// arrow.setColor(0xff00ff);
-// client.scene.add(arrow);
+
+// const curve = new THREE.CatmullRomCurve3([
+//   new THREE.Vector3(0,10,0),
+//   new THREE.Vector3(0, 10, 10)
+// ])
+
+// const lineCurve = new THREE.LineCurve3(new THREE.Vector3(0,10,0), new THREE.Vector3(0, 10, 10));
+// const geometry = new THREE.BufferGeometry().setFromPoints(lineCurve.getPoints(10));
+// const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00fff0 }));
+// client.scene.add(line);
 
 plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {
