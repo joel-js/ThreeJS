@@ -13,7 +13,7 @@ import {
 
 class TeethMovements {
   private main: SceneInit;
-  private buccalLigualAxis: V3;
+  private buccalLigualAxis: { [key: string] : V3 };
   private otherControls: (OrbitControls | TransformControls)[];
   private intersects: THREE.Intersection[];
   private intersectObject: THREE.Object3D | null;
@@ -25,7 +25,7 @@ class TeethMovements {
   ) {
     this.main = main;
     this.otherControls = otherControls || [];
-    this.buccalLigualAxis = new THREE.Vector3();
+    this.buccalLigualAxis = {"": new THREE.Vector3()}
     this.intersects = [];
     this.intersectObject = null;
     this.keydownListener = null;
@@ -54,10 +54,10 @@ class TeethMovements {
       )
       .normalize();
     console.log("buccal", buccalAxis);
-    if (this.buccalLigualAxis.length() === 0) {
-      this.buccalLigualAxis = buccalAxis;
+    if (!this.buccalLigualAxis[wrapper.name]) {
+      this.buccalLigualAxis[wrapper.name] = buccalAxis;
     }
-    wrapper.position.add(this.buccalLigualAxis);
+    wrapper.position.add(this.buccalLigualAxis[wrapper.name]);
   }
 
   private ligual(wrapper: Wrapper) {
@@ -65,10 +65,10 @@ class TeethMovements {
       getLocalY(wrapper),
       findTranslateAxis(this.main.wrappers, wrapper).next.normalize()
     );
-    if (this.buccalLigualAxis.length() === 0) {
-      this.buccalLigualAxis = ligualAxis;
+    if (!this.buccalLigualAxis[wrapper.name]) {
+      this.buccalLigualAxis[wrapper.name] = ligualAxis;
     }
-    wrapper.position.add(negativeVector(this.buccalLigualAxis));
+    wrapper.position.add(negativeVector(this.buccalLigualAxis[wrapper.name]));
   }
 
   private moveTeeth(wrapper: Wrapper) {
