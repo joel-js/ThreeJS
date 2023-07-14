@@ -89,6 +89,25 @@ export const findTranslateAxis = (wrappers: Wrapper[],wrapper: Wrapper): Wrapper
   return vector;
 }
 
+export const prevNext = (wrappers: Wrapper[],wrapper: Wrapper) => {
+  const name: string = wrapper.name;
+  const list = new DoublyLinkedList(VectorMap);
+  const { prev, next } = list.getPrevAndNext(name);
+  let preVector: V3 = new THREE.Vector3();
+  let nextVector: V3 = new THREE.Vector3();
+  for (let i = 0; i < wrappers.length; i++) {
+    if (prev && wrappers[i].name === prev) {
+      preVector = wrappers[i].position;
+    }
+    if (next && wrappers[i].name === next) {
+      nextVector = wrappers[i].position;
+    }
+  }
+  if(!preVector.length()) preVector = wrapper.position;
+  if(!nextVector.length()) nextVector = wrapper.position;
+  return new THREE.Vector3().subVectors(preVector, nextVector);
+}; 
+
 export const getLocalY = (wrapper: Wrapper): V3  => {
   const worldY  = new THREE.Vector3(0, 1, 0);
   const localY = worldY.applyQuaternion(wrapper.quaternion);

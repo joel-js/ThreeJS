@@ -9,6 +9,7 @@ import {
   xclockWise,
   xantiClockWise,
   negativeVector,
+  prevNext
 } from "../Utils/HelperFunctions";
 
 class TeethMovements {
@@ -25,7 +26,7 @@ class TeethMovements {
   ) {
     this.main = main;
     this.otherControls = otherControls || [];
-    this.buccalLigualAxis = {"": new THREE.Vector3()}
+    this.buccalLigualAxis = {};
     this.intersects = [];
     this.intersectObject = null;
     this.keydownListener = null;
@@ -36,13 +37,16 @@ class TeethMovements {
 
   private mesial(wrapper: Wrapper) {
     wrapper.position.add(
-      findTranslateAxis(this.main.wrappers, wrapper).next.multiplyScalar(0.1)
+      // findTranslateAxis(this.main.wrappers, wrapper).next.multiplyScalar(0.1)
+      prevNext(this.main.wrappers, wrapper).multiplyScalar(0.01)
     );
   }
 
   private distal(wrapper: Wrapper) {
     wrapper.position.add(
-      findTranslateAxis(this.main.wrappers, wrapper).prev.multiplyScalar(0.1)
+      // findTranslateAxis(this.main.wrappers, wrapper).prev.multiplyScalar(0.1)
+      prevNext(this.main.wrappers, wrapper).negate().multiplyScalar(0.01)
+
     );
   }
 
@@ -53,7 +57,7 @@ class TeethMovements {
         findTranslateAxis(this.main.wrappers, wrapper).next
       )
       .normalize();
-    console.log("buccal", buccalAxis);
+    console.log("buccal", this.buccalLigualAxis);
     if (!this.buccalLigualAxis[wrapper.name]) {
       this.buccalLigualAxis[wrapper.name] = buccalAxis;
     }
@@ -65,6 +69,8 @@ class TeethMovements {
       getLocalY(wrapper),
       findTranslateAxis(this.main.wrappers, wrapper).next.normalize()
     );
+    console.log("ligual", this.buccalLigualAxis);
+
     if (!this.buccalLigualAxis[wrapper.name]) {
       this.buccalLigualAxis[wrapper.name] = ligualAxis;
     }
