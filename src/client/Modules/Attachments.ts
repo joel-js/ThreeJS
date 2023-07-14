@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import SceneInit from "../SceneInit";
 import { Wrapper, V3 } from "../Utils/types";
-import { ArchWire } from "../Utils/HelperFunctions";
 
 class Attachments {
   private main: SceneInit;
@@ -54,16 +53,6 @@ class Attachments {
           wrapper.add(attachment);
         }
       });
-    }
-    if(this.linkCount === 2) {
-      const attach: (V3 | undefined)[] = (this.main.wrappers.map((wrapper: Wrapper) => {
-        if( wrapper.children[1]) {
-          console.log(new THREE.Vector3().addVectors(wrapper.children[1].position , wrapper.position));
-          return new THREE.Vector3().addVectors(wrapper.children[1].position , wrapper.position)
-        } 
-      }).filter((position) => position instanceof THREE.Vector3));
-      console.log(attach);
-      ArchWire(this.main, attach[0], attach[1])
     }
   }
   public execute() {
