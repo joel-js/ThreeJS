@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Wrapper, WrapperLocalAxes,V3 } from "./types";
 import { VectorMap } from './constants';
+import SceneInit from '../SceneInit';
 interface Element {
   value: any;
   prev: Element | null;
@@ -140,3 +141,10 @@ export const xantiClockWise = (wrapper: Wrapper, axis: V3) => {
 }
 
 export const negativeVector = (v: V3): V3 => new THREE.Vector3(-v.x, -v.y, -v.z); 
+
+export const ArchWire = (main: SceneInit, v1: V3 = new THREE.Vector3(), v2: V3 = new THREE.Vector3()) => {
+  const lineCurve = new THREE.LineCurve3(v1, v2);
+  const geometry = new THREE.BufferGeometry().setFromPoints(lineCurve.getPoints(10));
+  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00fff0 }));
+  main.scene.add(line);
+}
