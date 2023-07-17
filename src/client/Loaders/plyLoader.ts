@@ -15,7 +15,7 @@ const plyLoader = (
   files: Array<string>,
   meshes: Array<Mesh>,
   meshWrappers: Array<Wrapper>,
-  [material, gumMaterial]: THREE.MeshBasicMaterial[]
+  [material, gumMaterial]: THREE.MeshPhongMaterial[]
 ): Promise<rt> => {
   return new Promise<rt>((resolve) => {
     plyLoader2(files).then((geometries) => {

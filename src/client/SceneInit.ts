@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Mesh, Mouse, Wrapper } from './Utils/types';
+import * as dat from "dat.gui";
+
 export default class SceneInit {
   private readonly _scene: THREE.Scene;
   private readonly _camera: THREE.PerspectiveCamera;
@@ -10,6 +12,10 @@ export default class SceneInit {
   private _wrappers: Array<Wrapper>;
   private _raycaster: THREE.Raycaster;
   private _mouse: Mouse;
+  private _ambientLight: THREE.AmbientLight;
+  private _directionalLight: THREE.DirectionalLight;
+  public gui: dat.GUI;
+
   constructor() {
     this._scene =  new THREE.Scene();
     this._camera = new THREE.PerspectiveCamera(
@@ -24,6 +30,9 @@ export default class SceneInit {
     this._wrappers = [];
     this._raycaster = new THREE.Raycaster();
     this._mouse = new THREE.Vector2();
+    this.gui = new dat.GUI();
+    this._ambientLight = new THREE.AmbientLight(0xffffff, 0);
+    this._directionalLight = new THREE.DirectionalLight();  
     }
 
   public get scene(): THREE.Scene {
@@ -77,6 +86,13 @@ export default class SceneInit {
     this._renderer.render(this._scene, this._camera);
   }
 
+  public updateLightWithCamera() {
+    this._directionalLight.position.copy(this.camera.position);
+    this._directionalLight.target.position.copy(
+      this.camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(-1)
+    );
+  }
+
   private onWindowResize = () => {
     this._camera.aspect = window.innerWidth / window.innerHeight;
     this._camera.updateProjectionMatrix();
@@ -85,7 +101,11 @@ export default class SceneInit {
   }
   public initialize() {
     this.camera?.position.set(10, 10, 10);
+    this._directionalLight.position.set(100, 100, 0);
+    this.scene.add(this._ambientLight);
+    this.scene.add(this._directionalLight);
     this._renderer.setSize(window.innerWidth, window.innerHeight);
+    this._renderer.setClearAlpha(0);
     document.body.appendChild(this._renderer.domElement);
 
     window.addEventListener("resize", this.onWindowResize, false);

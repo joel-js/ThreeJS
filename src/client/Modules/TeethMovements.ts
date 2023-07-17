@@ -26,7 +26,7 @@ class TeethMovements {
   ) {
     this.main = main;
     this.otherControls = otherControls || [];
-    this.buccalLigualAxis = {};
+    this.buccalLigualAxis = {"": new THREE.Vector3()}
     this.intersects = [];
     this.intersectObject = null;
     this.keydownListener = null;
@@ -57,7 +57,7 @@ class TeethMovements {
         findTranslateAxis(this.main.wrappers, wrapper).next
       )
       .normalize();
-    console.log("buccal", this.buccalLigualAxis);
+    console.log("buccal", buccalAxis);
     if (!this.buccalLigualAxis[wrapper.name]) {
       this.buccalLigualAxis[wrapper.name] = buccalAxis;
     }
@@ -69,8 +69,6 @@ class TeethMovements {
       getLocalY(wrapper),
       findTranslateAxis(this.main.wrappers, wrapper).next.normalize()
     );
-    console.log("ligual", this.buccalLigualAxis);
-
     if (!this.buccalLigualAxis[wrapper.name]) {
       this.buccalLigualAxis[wrapper.name] = ligualAxis;
     }

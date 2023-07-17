@@ -2,19 +2,26 @@ import * as THREE from "three";
 import Stats from "three/examples/jsm/libs/stats.module";
 import plyLoader from "./Loaders/plyLoader";
 import { files } from "./Utils/constants";
-import { Mesh, Wrapper } from './Utils/types';
+import { Mesh, Wrapper } from "./Utils/types";
 import SceneInit from "./SceneInit";
 import App from "./App";
 
 const client = new SceneInit();
 client.initialize();
-
 client.scene.add(new THREE.AxesHelper(25));
-
+client.scene.background = new THREE.Color(0xc9c9d9);
 const mainWrapper = new THREE.Group();
 
-const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
-const gumMaterial = new THREE.MeshPhongMaterial({ color: 0xff8080 });
+const material = new THREE.MeshPhongMaterial({
+  color: 0xffffff,
+  transparent: true,
+  opacity: 1
+});
+const gumMaterial = new THREE.MeshPhongMaterial({
+  color: 0xff8080,
+  transparent: true,
+  opacity: 1
+});
 const meshes: Mesh[] = [];
 const meshWrappers: Wrapper[] = [];
 
@@ -58,6 +65,9 @@ const mesh = new THREE.Mesh(geometry, [material1, material2]);
 
 
 
+directionalLight.position.set(100, 100, 0);
+client.scene.add(ambientLight);
+client.scene.add(directionalLight);
 // const geometry = new THREE.BoxGeometry(1, 1, 1);
 // const material2 = [
 //   new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Front face - red
@@ -104,10 +114,16 @@ wrapper.add(mesh)
 // const perpendicular = new THREE.Vector3(0,0,0);
 // console.log('perpendicular', perpendicular.length());
 
-// const arrow = new THREE.ArrowHelper(perpendicular);
-// arrow.setLength(10);
-// arrow.setColor(0xff00ff);
-// client.scene.add(arrow);
+
+// const curve = new THREE.CatmullRomCurve3([
+//   new THREE.Vector3(0,10,0),
+//   new THREE.Vector3(0, 10, 10)
+// ])
+
+// const lineCurve = new THREE.LineCurve3(new THREE.Vector3(0,10,0), new THREE.Vector3(0, 10, 10));
+// const geometry = new THREE.BufferGeometry().setFromPoints(lineCurve.getPoints(10));
+// const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00fff0 }));
+// client.scene.add(line);
 
 plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {
@@ -119,7 +135,7 @@ plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
     App(client);
   })
   .catch((error) => {
-    console.error('Error loading PLY models:', error);
+    console.error("Error loading PLY models:", error);
   });
 client.scene.add(mainWrapper);
 
@@ -127,6 +143,7 @@ const stats = new Stats();
 
 const animate = (): void => {
   requestAnimationFrame(animate);
+  client.updateLightWithCamera();
   client.controller.update();
   client.render();
   stats.update();
