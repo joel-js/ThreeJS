@@ -15,12 +15,13 @@ const plyLoader = (
   files: Array<string>,
   meshes: Array<Mesh>,
   meshWrappers: Array<Wrapper>,
-  [material, gumMaterial]: THREE.MeshBasicMaterial[]
+  [material, gumMaterial]: THREE.MeshPhongMaterial[]
 ): Promise<rt> => {
   return new Promise<rt>((resolve) => {
     plyLoader2(files).then((geometries) => {
       let max = { size: 0, id: 0 };
       for (let i = 0; i < geometries.length; i++) {
+        geometries[i].computeVertexNormals();
         const mesh = new THREE.Mesh(geometries[i], material);
         const meshWrapper = new THREE.Group();
         mesh.name = files[i];
