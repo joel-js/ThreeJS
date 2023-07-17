@@ -5,14 +5,14 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 
 class MouseEvents {
   private main: SceneInit;
-  private ogMaterial: Array<THREE.MeshBasicMaterial>;
+  private ogMaterial: Array<THREE.MeshPhongMaterial>;
   private intersects: THREE.Intersection[];
   private intersectObject: THREE.Object3D | null;
   private transformControl: TransformControls;
   constructor(main: SceneInit) {
     this.main = main;
     this.ogMaterial = this.main.meshes.map(
-      (mesh) => mesh.material as THREE.MeshBasicMaterial
+      (mesh) => mesh.material as THREE.MeshPhongMaterial
     );
     this.intersects = [];
     this.intersectObject = null;
@@ -20,7 +20,16 @@ class MouseEvents {
     this.highLight = this.highLight.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
   }
-
+  private alterOGMaterial(){
+    const opacity = this.main.gui.__controllers[0].getValue()
+    this.ogMaterial = this.main.meshes.map((mesh) => {
+      return new THREE.MeshPhongMaterial({
+        color: mesh.name === "_gum.ply" ? 0xff8080 : 0xffffff,
+        transparent: true,
+        opacity: 1 - opacity,
+      });
+    });
+  }
   private onMouseMove(event: MouseEvent): void {
     this.main.mouse.set(
       (event.clientX / this.main.renderer.domElement.clientWidth) * 2 - 1,
@@ -37,6 +46,7 @@ class MouseEvents {
       if (this.intersectObject && this.intersectObject.name === mesh.name) {
         mesh.material = new THREE.MeshBasicMaterial({ wireframe: true });
       } else {
+        this.alterOGMaterial();
         mesh.material = this.ogMaterial[i];
       }
     });

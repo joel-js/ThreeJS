@@ -14,3 +14,10 @@ export type WrapperLocalAxes = {
   prev: V3,
   next: V3
 };
+
+type propVal = {
+  prop: string,
+  val: any
+}
+
+export type MaterailProps = Array<propVal>;
