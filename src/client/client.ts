@@ -30,7 +30,6 @@ const directionalLight = new THREE.DirectionalLight();
 directionalLight.position.set(100, 100, 0);
 client.scene.add(ambientLight);
 client.scene.add(directionalLight);
-
 // const geometry = new THREE.BoxGeometry(1, 1, 1);
 // const material2 = [
 //   new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Front face - red
