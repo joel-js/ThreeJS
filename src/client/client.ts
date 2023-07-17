@@ -13,10 +13,50 @@ client.scene.add(new THREE.AxesHelper(25));
 
 const mainWrapper = new THREE.Group();
 
-const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-const gumMaterial = new THREE.MeshBasicMaterial({ color: 0xff8080 });
+const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
+const gumMaterial = new THREE.MeshPhongMaterial({ color: 0xff8080 });
 const meshes: Mesh[] = [];
 const meshWrappers: Wrapper[] = [];
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0);
+const directionalLight = new THREE.DirectionalLight();
+directionalLight.position.set(100,100,0);
+client.scene.add(ambientLight);
+client.scene.add(directionalLight);
+
+const geometry = new THREE.BufferGeometry();
+
+// Define vertices
+const vertices = new Float32Array([
+  -1, 1, 0, // Vertex 0
+  -1, -1, 0, // Vertex 1
+  1, -1, 0, // Vertex 2
+  1, 1, 0 // Vertex 3
+]);
+geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+
+// Define faces
+const indices = new Uint32Array([
+  0, 1, 2, // Face 0
+  2, 3, 0 // Face 1
+]);
+geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+// Define materials
+const material1 = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Material 0 - red
+const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Material 1 - green
+
+// Set material indices for each face
+geometry.addGroup(0, 3, 0); // Assign Material 0 to Face 0
+geometry.addGroup(3, 3, 1); // Assign Material 1 to Face 1
+
+// Create mesh using the geometry and materials
+const mesh = new THREE.Mesh(geometry, [material1, material2]);
+// console.log('here, here ', mesh);
+
+// client.scene.add(mesh);
+
+
 
 // const geometry = new THREE.BoxGeometry(1, 1, 1);
 // const material2 = [
@@ -27,8 +67,20 @@ const meshWrappers: Wrapper[] = [];
 //   new THREE.MeshBasicMaterial({ color: 0xff00ff }), // Right face - magenta
 //   new THREE.MeshBasicMaterial({ color: 0x00ffff }), // Left face - cyan
 // ];
+// geometry.groups.forEach((group, index) => {
+//   group.materialIndex = index;
+// });
 // const mesh = new THREE.Mesh(geometry, material2);
-// client.scene.add(mesh);
+// // client.scene.add(mesh);
+// mesh.name = 'Trial'
+const wrapper = new THREE.Group();
+wrapper.add(mesh)
+// wrapper.name = 'Trial'
+// // client.meshes.push(mesh)
+// // client.wrappers.push(wrapper)
+// // mainWrapper.add(wrapper)
+// console.log('just mesh ',mesh);
+
 // const axis = new THREE.Vector3(0, 0, 1); // Y-axis
 // const angle = Math.PI / 6;
 // mesh.rotateOnAxis(axis, angle);
@@ -61,6 +113,8 @@ plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {
     client.meshes = result.meshes;
     client.wrappers = result.wrappers;
+    client.meshes.push(mesh)
+    client.wrappers.push(wrapper)
     result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
     App(client);
   })

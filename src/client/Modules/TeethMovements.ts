@@ -144,6 +144,8 @@ class TeethMovements {
 
     if (this.intersects.length > 0) {
       this.intersectObject = this.intersects[0].object;
+      // this.intersects[0]
+      console.log('here',this.intersects[0].face?.materialIndex, this.intersects[0].object.name);
     } else {
       this.intersectObject = null;
     }
