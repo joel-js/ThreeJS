@@ -114,7 +114,7 @@ export const prevNext = (wrappers: Wrapper[], wrapper: Wrapper) => {
 
 export const getLocalY = (wrapper: Wrapper): V3 => {
   const worldY = new THREE.Vector3(0, 1, 0);
-  const localY = worldY.applyQuaternion(wrapper.quaternion);
+  const localY = worldY.applyQuaternion(wrapper.children[0].quaternion);
   console.log("localY ", localY);
   return localY;
 };
@@ -148,4 +148,15 @@ export const ArchWire = (main: SceneInit, v1: V3 = new THREE.Vector3(), v2: V3 =
   const geometry = new THREE.BufferGeometry().setFromPoints(lineCurve.getPoints(10));
   const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00fff0 }));
   main.scene.add(line);
+}
+
+export const Arrow = (main: SceneInit, wrapper: Wrapper, dir: V3, originVector?:V3 ) => {
+
+  dir.normalize();
+  const origin = originVector || wrapper.position;
+  const length = 10;
+  const hex = 0xffff00;
+
+  const arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
+  main.scene.add( arrowHelper );
 }

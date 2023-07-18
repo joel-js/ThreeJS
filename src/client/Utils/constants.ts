@@ -1,4 +1,5 @@
 export const files: Array<string> = [
+  "trial.ply",
   "_gum.ply",
   "canine-left.ply",
   "canine-right.ply",
