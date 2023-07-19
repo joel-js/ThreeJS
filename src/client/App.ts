@@ -12,9 +12,10 @@ const App = (main: SceneInit) => {
   mouseEvents.highLight();
   const tm = new TeethMovements(main);
   tm.execute();
-  CollisionMapping(main);
   const attachments = new Attachments(main);
   attachments.execute();
+  const colMap = new CollisionMapping(main);
+  colMap.execute();
 }
  
 export default App;

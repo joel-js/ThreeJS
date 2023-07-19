@@ -5,14 +5,14 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 
 class MouseEvents {
   private main: SceneInit;
-  private ogMaterial: Array<THREE.MeshPhongMaterial>;
+  private ogMaterial: Array<THREE.MeshLambertMaterial>;
   private intersects: THREE.Intersection[];
   private intersectObject: THREE.Object3D | null;
   private transformControl: TransformControls;
   constructor(main: SceneInit) {
     this.main = main;
     this.ogMaterial = this.main.meshes.map(
-      (mesh) => mesh.material as THREE.MeshPhongMaterial
+      (mesh) => mesh.material as THREE.MeshLambertMaterial
     );
     this.intersects = [];
     this.intersectObject = null;
@@ -20,10 +20,11 @@ class MouseEvents {
     this.highLight = this.highLight.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
   }
-  private alterOGMaterial(){
-    const opacity = this.main.gui.__controllers[0].getValue()
+  private alterOGMaterial() {
+    console.log('ogMat',this.main.meshes[7]);
+    const opacity = this.main.gui.__controllers[0].getValue();
     this.ogMaterial = this.main.meshes.map((mesh) => {
-      return new THREE.MeshPhongMaterial({
+      return new THREE.MeshLambertMaterial({
         color: mesh.name === "_gum.ply" ? 0xff8080 : 0xffffff,
         transparent: true,
         opacity: 1 - opacity,
@@ -36,7 +37,10 @@ class MouseEvents {
       -(event.clientY / this.main.renderer.domElement.clientHeight) * 2 + 1
     );
     this.main.raycaster.setFromCamera(this.main.mouse, this.main.camera);
-    this.intersects = this.main.raycaster.intersectObjects(this.main.meshes, false);
+    this.intersects = this.main.raycaster.intersectObjects(
+      this.main.meshes,
+      false
+    );
     if (this.intersects.length > 0) {
       this.intersectObject = this.intersects[0].object;
     } else {
