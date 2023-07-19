@@ -15,11 +15,13 @@ const mainWrapper = new THREE.Group();
 
 const material = new THREE.MeshPhongMaterial({
   color: 0xffffff,
+  vertexColors: true,
   transparent: true,
   opacity: 1
 });
 const gumMaterial = new THREE.MeshPhongMaterial({
   color: 0xff8080,
+  vertexColors: true,
   transparent: true,
   opacity: 1
 });
