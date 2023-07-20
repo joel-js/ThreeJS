@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 import { rt, Mesh, Wrapper } from "../Utils/types";
+import { setState } from "../State/MaterialState";
 
 const plyLoader2 = (files: Array<string>): Promise<THREE.BufferGeometry[]> => {
   const plyModels: Promise<THREE.BufferGeometry>[] = [];
@@ -26,6 +27,9 @@ const plyLoader = (
         const meshWrapper = new THREE.Group();
         mesh.name = files[i];
         meshWrapper.name = files[i];
+        setState(mesh.name, {
+          material: () => material
+        });
         meshWrapper.add(mesh);
 
         const boundingBox = new THREE.Box3().setFromObject(mesh);
@@ -47,7 +51,9 @@ const plyLoader = (
       }
 
       meshes[max.id].material = gumMaterial;
-
+      setState(meshes[max.id].name, {
+        material: () => gumMaterial
+      })
       const result: rt = {
         meshes: meshes,
         wrappers: meshWrappers,

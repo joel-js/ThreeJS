@@ -5,6 +5,7 @@ import { files } from "./Utils/constants";
 import { Mesh, Wrapper } from "./Utils/types";
 import SceneInit from "./SceneInit";
 import App from "./App";
+import { getState, initial_State } from "./State/MaterialState";
 // import { Arrow, getLocalY } from "./Utils/HelperFunctions";
 
 const client = new SceneInit();
@@ -13,18 +14,8 @@ client.scene.add(new THREE.AxesHelper(25));
 client.scene.background = new THREE.Color(0xc9c9d9);
 const mainWrapper = new THREE.Group();
 
-const material = new THREE.MeshLambertMaterial({
-  color: 0xffffff,
-  vertexColors: true,
-  transparent: true,
-  opacity: 1
-});
-const gumMaterial = new THREE.MeshLambertMaterial({
-  color: 0xff8080,
-  vertexColors: true,
-  transparent: true,
-  opacity: 1
-});
+const material: THREE.MeshLambertMaterial = initial_State['teeth'].material();
+const gumMaterial: THREE.MeshLambertMaterial = initial_State['gum'].material();
 const meshes: Mesh[] = [];
 const meshWrappers: Wrapper[] = [];
 
@@ -41,7 +32,6 @@ plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
     console.error("Error loading PLY models:", error);
   });
 client.scene.add(mainWrapper);
-
 const stats = new Stats();
 
 const animate = (): void => {

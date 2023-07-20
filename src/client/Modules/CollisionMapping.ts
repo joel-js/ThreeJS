@@ -3,6 +3,7 @@ import SceneInit from "../SceneInit";
 import { Arrow, getLocalY } from "../Utils/HelperFunctions";
 import { Wrapper, Mesh } from "../Utils/types";
 import { OccColorMap } from "../Utils/constants";
+import { setState } from "../State/MaterialState";
 
 
 // dist >= 0.7	: no contact -> white
@@ -24,7 +25,13 @@ class CollisionMapping {
   public execute() {
     const mesh = this.meshes[7];
     const wrapper = this.wrappers[7];
-
+    setState(mesh.name, {
+      material: () => new THREE.MeshLambertMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 1
+      })
+    })
     const boxGeometry = new THREE.TorusKnotGeometry(3); // Width and height of the box
 
     const boxMaterial = new THREE.MeshBasicMaterial({

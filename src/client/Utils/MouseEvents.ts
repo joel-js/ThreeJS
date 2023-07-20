@@ -2,6 +2,7 @@ import * as THREE from "three";
 import SceneInit from "../SceneInit";
 import TransformControl from "../Controls/TransformControl";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
+import { getState } from "../State/MaterialState";
 
 class MouseEvents {
   private main: SceneInit;
@@ -50,8 +51,9 @@ class MouseEvents {
       if (this.intersectObject && this.intersectObject.name === mesh.name) {
         mesh.material = new THREE.MeshBasicMaterial({ wireframe: true });
       } else {
-        this.alterOGMaterial();
-        mesh.material = this.ogMaterial[i];
+        // this.alterOGMaterial();
+        mesh.material = getState(mesh.name).material();
+        mesh.name === '_gum.ply' && console.log(mesh.material)
       }
     });
   }
