@@ -16,19 +16,19 @@ const plyLoader = (
   files: Array<string>,
   meshes: Array<Mesh>,
   meshWrappers: Array<Wrapper>,
-  [material, gumMaterial]: THREE.MeshLambertMaterial[]
+  [material, gumMaterial]: Object[]
 ): Promise<rt> => {
   return new Promise<rt>((resolve) => {
     plyLoader2(files).then((geometries) => {
       let max = { size: 0, id: 0 };
       for (let i = 0; i < geometries.length; i++) {
         geometries[i].computeVertexNormals();
-        const mesh = new THREE.Mesh(geometries[i], material);
+        const mesh = new THREE.Mesh(geometries[i], new THREE.MeshLambertMaterial(material));
         const meshWrapper = new THREE.Group();
         mesh.name = files[i];
         meshWrapper.name = files[i];
         setState(mesh.name, {
-          material: () => material
+          material: material
         });
         meshWrapper.add(mesh);
 
@@ -50,9 +50,9 @@ const plyLoader = (
         meshWrappers.push(meshWrapper);
       }
 
-      meshes[max.id].material = gumMaterial;
+      meshes[max.id].material = new THREE.MeshLambertMaterial(gumMaterial);
       setState(meshes[max.id].name, {
-        material: () => gumMaterial
+        material: gumMaterial
       })
       const result: rt = {
         meshes: meshes,

@@ -14,8 +14,8 @@ client.scene.add(new THREE.AxesHelper(25));
 client.scene.background = new THREE.Color(0xc9c9d9);
 const mainWrapper = new THREE.Group();
 
-const material: THREE.MeshLambertMaterial = initial_State['teeth'].material();
-const gumMaterial: THREE.MeshLambertMaterial = initial_State['gum'].material();
+const material: Object = initial_State['teeth'].material;
+const gumMaterial: Object = initial_State['gum'].material;
 const meshes: Mesh[] = [];
 const meshWrappers: Wrapper[] = [];
 
@@ -25,7 +25,10 @@ plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {
     client.meshes = result.meshes;
     client.wrappers = result.wrappers;
-    result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
+    result.wrappers.forEach((wrapper) => { 
+      console.log('mesh',getState(wrapper.name));
+      mainWrapper.add(wrapper)
+    });
     App(client);
   })
   .catch((error) => {

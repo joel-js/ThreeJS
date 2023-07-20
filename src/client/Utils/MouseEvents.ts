@@ -6,32 +6,28 @@ import { getState } from "../State/MaterialState";
 
 class MouseEvents {
   private main: SceneInit;
-  private ogMaterial: Array<THREE.MeshLambertMaterial>;
   private intersects: THREE.Intersection[];
   private intersectObject: THREE.Object3D | null;
   private transformControl: TransformControls;
   constructor(main: SceneInit) {
     this.main = main;
-    this.ogMaterial = this.main.meshes.map(
-      (mesh) => mesh.material as THREE.MeshLambertMaterial
-    );
     this.intersects = [];
     this.intersectObject = null;
     this.transformControl = TransformControl(this.main);
     this.highLight = this.highLight.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
   }
-  private alterOGMaterial() {
-    console.log('ogMat',this.main.meshes[7]);
-    const opacity = this.main.gui.__controllers[0].getValue();
-    this.ogMaterial = this.main.meshes.map((mesh) => {
-      return new THREE.MeshLambertMaterial({
-        color: mesh.name === "_gum.ply" ? 0xff8080 : 0xffffff,
-        transparent: true,
-        opacity: 1 - opacity,
-      });
-    });
-  }
+  // private alterOGMaterial() {
+  //   console.log('ogMat',this.main.meshes[7]);
+  //   const opacity = this.main.gui.__controllers[0].getValue();
+  //   this.ogMaterial = this.main.meshes.map((mesh) => {
+  //     return new THREE.MeshLambertMaterial({
+  //       color: mesh.name === "_gum.ply" ? 0xff8080 : 0xffffff,
+  //       transparent: true,
+  //       opacity: 1 - opacity,
+  //     });
+  //   });
+  // }
   private onMouseMove(event: MouseEvent): void {
     this.main.mouse.set(
       (event.clientX / this.main.renderer.domElement.clientWidth) * 2 - 1,
@@ -52,7 +48,7 @@ class MouseEvents {
         mesh.material = new THREE.MeshBasicMaterial({ wireframe: true });
       } else {
         // this.alterOGMaterial();
-        mesh.material = getState(mesh.name).material();
+        mesh.material = new THREE.MeshLambertMaterial(getState(mesh.name).material); // Expensive
         mesh.name === '_gum.ply' && console.log(mesh.material)
       }
     });

@@ -10,6 +10,7 @@
   "author": "joel.js",
   "license": "ISC",
   "devDependencies": {
+    "@types/lodash": "^4.14.195",
     "@types/three": "^0.152.1",
     "three": "^0.154.0",
     "ts-loader": "^9.4.4",
@@ -19,5 +20,7 @@
     "webpack-dev-server": "^4.15.1",
     "webpack-merge": "^5.9.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }
