@@ -81,7 +81,6 @@ export const findTranslateAxis = (
         wrappers[i].position,
         wrapper.position
       );
-      // console.log("prev => ", wrapper.position, this.wrappers[i].position);
     }
     if (next && wrappers[i].name === next) {
       vector.next = new THREE.Vector3().subVectors(
@@ -115,7 +114,6 @@ export const prevNext = (wrappers: Wrapper[], wrapper: Wrapper) => {
 export const getLocalY = (wrapper: Wrapper): V3 => {
   const worldY = new THREE.Vector3(0, 1, 0);
   const localY = worldY.applyQuaternion(wrapper.children[0].quaternion);
-  console.log("localY ", localY);
   return localY;
 };
 export const clockWise = (wrapper: Wrapper, axes: WrapperLocalAxes) => {
@@ -131,13 +129,11 @@ export const antiClockWise = (wrapper: Wrapper, axes: WrapperLocalAxes) => {
 export const xclockWise = (wrapper: Wrapper, axis: V3) => {
   const angle = Math.PI / 18;
   const normAxis = axis.normalize();
-  console.log("xclockWise: axis angle", normAxis, angle);
   wrapper.rotateOnAxis(normAxis, angle);
 };
 export const xantiClockWise = (wrapper: Wrapper, axis: V3) => {
   const angle = -Math.PI / 18;
   const normAxis = axis.normalize();
-  console.log("xantiClockWise: axis angle", normAxis, angle);
   wrapper.rotateOnAxis(normAxis, angle);
 };
 

@@ -7,7 +7,6 @@ import * as _ from 'lodash';
 const iterate = (meshes: Mesh[], val: number) => {
   meshes.forEach((mesh) => {
     const curr_state = getState(mesh.name);
-    // console.log('curr',curr_state);
     const new_state  = _.merge(curr_state, {material: { opacity: 1-val }})
     const material = new THREE.MeshLambertMaterial(new_state.material);
     setState(mesh.name, new_state);

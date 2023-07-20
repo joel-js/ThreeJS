@@ -49,7 +49,6 @@ class MouseEvents {
       } else {
         // this.alterOGMaterial();
         mesh.material = new THREE.MeshLambertMaterial(getState(mesh.name).material); // Expensive
-        mesh.name === '_gum.ply' && console.log(mesh.material)
       }
     });
   }

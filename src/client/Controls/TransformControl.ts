@@ -5,7 +5,7 @@ import SceneInit from "../SceneInit";
 const TransformControl = (client: SceneInit, otherControls?: (OrbitControls | TransformControls)[]): TransformControls => {
   
   const transformControls = new TransformControls(client.camera, client.renderer.domElement);
-  transformControls.setMode("rotate");
+  transformControls.setMode("translate");
   client.scene.add(transformControls);
   transformControls.addEventListener("dragging-changed", function (event) {
     client.controller.enabled = !event.value;
@@ -20,12 +20,6 @@ const TransformControl = (client: SceneInit, otherControls?: (OrbitControls | Tr
       case "g":
         transformControls.setMode("translate");
         break;
-      case "r":
-        transformControls.setMode("rotate");
-        break;
-      case "s":
-          transformControls.setMode("scale");
-          break;
         }
   });
   return transformControls;

@@ -9,7 +9,7 @@ import Attachments from './Modules/Attachments';
 const App = (main: SceneInit) => {
   Transparency(main);
   const mouseEvents = new MouseEvents(main);
-  mouseEvents.highLight();
+  // mouseEvents.highLight();
   const tm = new TeethMovements(main);
   tm.execute();
   const attachments = new Attachments(main);

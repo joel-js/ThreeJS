@@ -26,7 +26,6 @@ plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
     client.meshes = result.meshes;
     client.wrappers = result.wrappers;
     result.wrappers.forEach((wrapper) => { 
-      console.log('mesh',getState(wrapper.name));
       mainWrapper.add(wrapper)
     });
     App(client);

@@ -1,7 +1,8 @@
 import * as THREE from "three";
+import * as _ from 'lodash';
 import SceneInit from "../SceneInit";
-import { Arrow, getLocalY } from "../Utils/HelperFunctions";
-import { Wrapper, Mesh } from "../Utils/types";
+import { Arrow, getLocalY, negativeVector } from "../Utils/HelperFunctions";
+import { Wrapper, Mesh, V3 } from "../Utils/types";
 import { OccColorMap } from "../Utils/constants";
 import { getState, setState } from "../State/MaterialState";
 
@@ -23,22 +24,119 @@ class CollisionMapping {
     this.gui = main.gui;
   }
 
+  private logic(boxMesh: Mesh, mesh: Mesh, targetVector: V3) {
+    boxMesh.updateMatrixWorld(true);
+    const geometry = mesh.geometry;
+    if (geometry.isBufferGeometry) {
+      const positionAttribute = geometry.attributes.position;
+      const normalAttribute = geometry.attributes.normal;
+      const indexArray = geometry.index?.array || [];
+
+      if (positionAttribute && normalAttribute && indexArray) {
+        const positionArray: ArrayLike<number> = positionAttribute.array;
+        const vertexNormalArray: ArrayLike<number> = normalAttribute.array;
+        const vertices: Array<THREE.Vector3> = [];
+        const vertexNormals: Array<THREE.Vector3> = [];
+        for (let i = 0; i < positionArray.length; i += 3) {
+          vertices.push(
+            new THREE.Vector3(
+              positionArray[i],
+              positionArray[i + 1],
+              positionArray[i + 2]
+            )
+          );
+          vertexNormals.push(
+            new THREE.Vector3(
+              vertexNormalArray[i],
+              vertexNormalArray[i + 1],
+              vertexNormalArray[i + 2]
+            )
+          );
+        }
+
+        const raycaster = new THREE.Raycaster();
+        const neg_raycaster = new THREE.Raycaster();
+
+        const colorArray = new Float32Array(
+          positionAttribute.array.length
+        ).fill(1);
+        vertexNormals.forEach((normal, i) => {
+          const yComponent = normal.y;
+          const newYVector = new THREE.Vector3().set(0, yComponent, 0);
+          const dotProduct = normal.dot(targetVector.normalize());
+          if (dotProduct > 0.6) {
+            raycaster.set(vertices[i], newYVector.normalize());
+            neg_raycaster.set(vertices[i], negativeVector(newYVector.normalize()));
+            // this.main.scene.add(
+            //       new THREE.ArrowHelper(
+            //         raycaster.ray.direction,
+            //         raycaster.ray.origin,
+            //         300,
+            //         0xff00ff
+            //       )
+            //     );
+            const intersects: THREE.Intersection[] | undefined =
+              raycaster.intersectObject(boxMesh, false);
+            const neg_intersects: THREE.Intersection[] | undefined =
+              neg_raycaster.intersectObject(boxMesh, false);
+            if (intersects.length) {
+              const dist: number = intersects[0].distance;
+              
+              if (6 > dist && dist >= 3) {
+                colorArray.set(OccColorMap.green, i * 3);
+              } 
+              // else if (4 > dist && dist >= 3) {
+              //   colorArray.set(OccColorMap.cyan, i * 3);
+              // } 
+              else if (3 > dist && dist >= 0) {
+                colorArray.set(OccColorMap.blue, i * 3);
+              }
+            }
+            if (neg_intersects.length) {
+              const neg_dist: number = neg_intersects[0].distance;
+              if (1 > neg_dist && neg_dist > 0){
+                colorArray.set(OccColorMap.red, i * 3);
+              } else if (2 > neg_dist && neg_dist >= 1) {
+                colorArray.set(OccColorMap.pink, i * 3);
+              }
+            }
+          }
+          else {
+            // raycaster.set(vertices[i], normal.normalize());
+            // this.main.scene.add(
+            //   new THREE.ArrowHelper(
+            //     raycaster.ray.direction,
+            //     raycaster.ray.origin,
+            //     300,
+            //     0xff00ff
+            //   )
+            // );
+          }
+        });
+
+        const colorAttribute = new THREE.Float32BufferAttribute(
+          colorArray,
+          3
+        );
+        mesh.geometry.setAttribute("color", colorAttribute);
+        mesh.geometry.attributes.color.needsUpdate = true;
+      }
+    }
+  }
   public execute() {
     const mesh = this.meshes[7];
     const wrapper = this.wrappers[7];
-    setState(mesh.name, {
-      material: {
-        vertexColors: true,
-        color: 0xffffff,
-        transparent: true,
-        opacity: 1,
-      },
-    });
+    const curr_state = getState(mesh.name);
+    const new_state = _.merge(curr_state, { material: { vertexColors: true, side: THREE.DoubleSide } });
+    setState(mesh.name, new_state);
     mesh.material = new THREE.MeshLambertMaterial(getState(mesh.name).material);
-    const boxGeometry = new THREE.SphereGeometry(3); // Width and height of the box
+    const boxGeometry = new THREE.BoxGeometry(10, 3, 10); // Width and height of the box
 
     const boxMaterial = new THREE.MeshBasicMaterial({
-      color: 0xff0000,
+      color: 0x928670,
+      transparent: true,
+      opacity: 0.4,
+      side: THREE.DoubleSide
     });
 
     const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
@@ -53,7 +151,7 @@ class CollisionMapping {
     boxMesh.updateMatrixWorld(true);
 
     const targetVector = getLocalY(wrapper); // Target vector to check parallelism
-
+    this.logic(boxMesh, mesh, targetVector);
     const controls = {
       positionY: boxMesh.position.y,
     };
@@ -64,68 +162,7 @@ class CollisionMapping {
         boxMesh.position.setY(val);
       })
       .onFinishChange(() => {
-        boxMesh.updateMatrixWorld(true);
-        const geometry = mesh.geometry;
-        if (geometry.isBufferGeometry) {
-          const positionAttribute = geometry.attributes.position;
-          const normalAttribute = geometry.attributes.normal;
-          const indexArray = geometry.index?.array || [];
-
-          if (positionAttribute && normalAttribute && indexArray) {
-            const positionArray: ArrayLike<number> = positionAttribute.array;
-            const vertexNormalArray: ArrayLike<number> = normalAttribute.array;
-            const vertices: Array<THREE.Vector3> = [];
-            const vertexNormals: Array<THREE.Vector3> = [];
-            for (let i = 0; i < positionArray.length; i += 3) {
-              vertices.push(
-                new THREE.Vector3(
-                  positionArray[i],
-                  positionArray[i + 1],
-                  positionArray[i + 2]
-                )
-              );
-              vertexNormals.push(
-                new THREE.Vector3(
-                  vertexNormalArray[i],
-                  vertexNormalArray[i + 1],
-                  vertexNormalArray[i + 2]
-                )
-              );
-            }
-
-            const raycaster = new THREE.Raycaster();
-            const colorArray = new Float32Array(
-              positionAttribute.array.length
-            ).fill(1);
-
-            vertexNormals.forEach((normal, i) => {
-              const dotProduct = normal.dot(targetVector.normalize());
-              if (dotProduct > 0.7) {
-                raycaster.set(vertices[i], normal.normalize());
-                const intersects: THREE.Intersection[] | undefined =
-                  raycaster.intersectObject(boxMesh, false);
-                if (intersects.length) {
-                  const dist: number = intersects[0].distance;
-                  if (6 > dist && dist >= 4) {
-                    console.log(OccColorMap.green);
-                    colorArray.set(OccColorMap.green, i * 3);
-                  } else if (4 > dist && dist >= 3) {
-                    colorArray.set(OccColorMap.cyan, i * 3);
-                  } else if (3 > dist && dist >= 0) {
-                    colorArray.set(OccColorMap.red, i * 3);
-                  }
-                }
-              }
-            });
-
-            const colorAttribute = new THREE.Float32BufferAttribute(
-              colorArray,
-              3
-            );
-            mesh.geometry.setAttribute("color", colorAttribute);
-            mesh.geometry.attributes.color.needsUpdate = true;
-          }
-        }
+        this.logic(boxMesh, mesh, targetVector);
       });
   }
 }
