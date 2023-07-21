@@ -64,54 +64,36 @@ class CollisionMapping {
           const yComponent = normal.y;
           const newYVector = new THREE.Vector3().set(0, yComponent, 0);
           const dotProduct = normal.dot(targetVector.normalize());
-          if (dotProduct > 0.6) {
-            raycaster.set(vertices[i], newYVector.normalize());
-            neg_raycaster.set(vertices[i], negativeVector(newYVector.normalize()));
-            // this.main.scene.add(
-            //       new THREE.ArrowHelper(
-            //         raycaster.ray.direction,
-            //         raycaster.ray.origin,
-            //         300,
-            //         0xff00ff
-            //       )
-            //     );
+          if (dotProduct > 0.4) {
+            raycaster.set(vertices[i], normal.normalize());
+            neg_raycaster.set(vertices[i], negativeVector(normal.normalize()));
+           
             const intersects: THREE.Intersection[] | undefined =
               raycaster.intersectObject(boxMesh, false);
             const neg_intersects: THREE.Intersection[] | undefined =
               neg_raycaster.intersectObject(boxMesh, false);
-            if (intersects.length) {
+
+              if (neg_intersects.length) {
+                const neg_dist: number = neg_intersects[0].distance;
+                if (1 > neg_dist && neg_dist > 0){
+                  colorArray.set(OccColorMap.red, i * 3);
+                } else if (neg_dist >= 1) {
+                  colorArray.set(OccColorMap.pink, i * 3);
+                }
+              }
+            else if (intersects.length) {
               const dist: number = intersects[0].distance;
               
               if (6 > dist && dist >= 3) {
                 colorArray.set(OccColorMap.green, i * 3);
               } 
-              // else if (4 > dist && dist >= 3) {
-              //   colorArray.set(OccColorMap.cyan, i * 3);
-              // } 
+              
               else if (3 > dist && dist >= 0) {
                 colorArray.set(OccColorMap.blue, i * 3);
               }
             }
-            if (neg_intersects.length) {
-              const neg_dist: number = neg_intersects[0].distance;
-              if (1 > neg_dist && neg_dist > 0){
-                colorArray.set(OccColorMap.red, i * 3);
-              } else if (2 > neg_dist && neg_dist >= 1) {
-                colorArray.set(OccColorMap.pink, i * 3);
-              }
-            }
           }
-          else {
-            // raycaster.set(vertices[i], normal.normalize());
-            // this.main.scene.add(
-            //   new THREE.ArrowHelper(
-            //     raycaster.ray.direction,
-            //     raycaster.ray.origin,
-            //     300,
-            //     0xff00ff
-            //   )
-            // );
-          }
+          
         });
 
         const colorAttribute = new THREE.Float32BufferAttribute(
@@ -130,12 +112,12 @@ class CollisionMapping {
     const new_state = _.merge(curr_state, { material: { vertexColors: true, side: THREE.DoubleSide } });
     setState(mesh.name, new_state);
     mesh.material = new THREE.MeshLambertMaterial(getState(mesh.name).material);
-    const boxGeometry = new THREE.BoxGeometry(10, 3, 10); // Width and height of the box
+    const boxGeometry = new THREE.SphereGeometry(3); // Width and height of the box
 
     const boxMaterial = new THREE.MeshBasicMaterial({
       color: 0x928670,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.6,
       side: THREE.DoubleSide
     });
 
