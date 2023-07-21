@@ -2,9 +2,10 @@ import * as THREE from "three";
 import * as _ from 'lodash';
 import SceneInit from "../SceneInit";
 import { Arrow, getLocalY, negativeVector } from "../Utils/HelperFunctions";
-import { Wrapper, Mesh, V3 } from "../Utils/types";
+import { Wrapper, Mesh, V3, Mode } from "../Utils/types";
 import { OccColorMap } from "../Utils/constants";
 import { getState, setState } from "../State/MaterialState";
+import TransformControl from "../Controls/TransformControl";
 
 // dist >= 0.7	: no contact -> white
 // 0.7 > dist >= 0.2: no contact -> green
@@ -106,46 +107,44 @@ class CollisionMapping {
     }
   }
   public execute() {
-    const mesh = this.meshes[7];
-    const wrapper = this.wrappers[7];
-    const curr_state = getState(mesh.name);
-    const new_state = _.merge(curr_state, { material: { vertexColors: true, side: THREE.DoubleSide } });
-    setState(mesh.name, new_state);
-    mesh.material = new THREE.MeshLambertMaterial(getState(mesh.name).material);
-    const boxGeometry = new THREE.SphereGeometry(3); // Width and height of the box
+    for(let i=1; i<=14;i++){
 
-    const boxMaterial = new THREE.MeshBasicMaterial({
-      color: 0x928670,
-      transparent: true,
-      opacity: 0.6,
-      side: THREE.DoubleSide
-    });
-
-    const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
-    boxMesh.name = "plainMesh";
-    this.main.scene.add(boxMesh);
-    boxMesh.position.set(
-      19.976550102233887,
-      7.298790097236633,
-      -9.983530044555664
-    );
-    boxMesh.visible = true;
-    boxMesh.updateMatrixWorld(true);
-
-    const targetVector = getLocalY(wrapper); // Target vector to check parallelism
-    this.logic(boxMesh, mesh, targetVector);
-    const controls = {
-      positionY: boxMesh.position.y,
-    };
-
-    this.gui
-      .add(controls, "positionY", 0, 12)
-      .onChange((val) => {
-        boxMesh.position.setY(val);
-      })
-      .onFinishChange(() => {
-        this.logic(boxMesh, mesh, targetVector);
+      const mesh = this.meshes[i];
+      const wrapper = this.wrappers[i];
+      const curr_state = getState(mesh.name);
+      const new_state = _.merge(curr_state, { material: { vertexColors: true, side: THREE.DoubleSide } });
+      setState(mesh.name, new_state);
+      mesh.material = new THREE.MeshLambertMaterial(getState(mesh.name).material);
+      const boxGeometry = new THREE.SphereGeometry(3); // Width and height of the box
+  
+      const boxMaterial = new THREE.MeshBasicMaterial({
+        color: 0x928670,
+        transparent: true,
+        opacity: 0.6,
+        side: THREE.DoubleSide
       });
+  
+      const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+      boxMesh.name = "plainMesh";
+      this.main.scene.add(boxMesh);
+      boxMesh.position.set(wrapper.position.x, wrapper.position.y+8, wrapper.position.z)
+      boxMesh.visible = true;
+      boxMesh.updateMatrixWorld(true);
+  
+      const targetVector = getLocalY(wrapper); // Target vector to check parallelism
+      this.logic(boxMesh, mesh, targetVector);
+      const controls = {
+        [mesh.name]: boxMesh.position.y,
+      };
+      this.gui
+        .add(controls, mesh.name, 0, 12)
+        .onChange((val) => {
+          boxMesh.position.setY(val);
+        })
+        .onFinishChange(() => {
+          this.logic(boxMesh, mesh, targetVector);
+        });
+    }
   }
 }
 

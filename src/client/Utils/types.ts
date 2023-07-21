@@ -28,3 +28,9 @@ export type state = {
 export type stateArray ={
   [key: string]: state
 };
+
+export enum Mode {
+  Translate = 'translate',
+  Rotate = 'rotate',
+  Scale = 'scale'
+}

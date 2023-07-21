@@ -8,12 +8,10 @@ class MouseEvents {
   private main: SceneInit;
   private intersects: THREE.Intersection[];
   private intersectObject: THREE.Object3D | null;
-  private transformControl: TransformControls;
   constructor(main: SceneInit) {
     this.main = main;
     this.intersects = [];
     this.intersectObject = null;
-    this.transformControl = TransformControl(this.main);
     this.highLight = this.highLight.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
   }
