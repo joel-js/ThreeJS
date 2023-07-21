@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 import { rt, Mesh, Wrapper } from "../Utils/types";
+import { setState } from "../State/MaterialState";
 
 const plyLoader2 = (files: Array<string>): Promise<THREE.BufferGeometry[]> => {
   const plyModels: Promise<THREE.BufferGeometry>[] = [];
@@ -15,17 +16,20 @@ const plyLoader = (
   files: Array<string>,
   meshes: Array<Mesh>,
   meshWrappers: Array<Wrapper>,
-  [material, gumMaterial]: THREE.MeshPhongMaterial[]
+  [material, gumMaterial]: Object[]
 ): Promise<rt> => {
   return new Promise<rt>((resolve) => {
     plyLoader2(files).then((geometries) => {
       let max = { size: 0, id: 0 };
       for (let i = 0; i < geometries.length; i++) {
         geometries[i].computeVertexNormals();
-        const mesh = new THREE.Mesh(geometries[i], material);
+        const mesh = new THREE.Mesh(geometries[i], new THREE.MeshLambertMaterial(material));
         const meshWrapper = new THREE.Group();
         mesh.name = files[i];
         meshWrapper.name = files[i];
+        setState(mesh.name, {
+          material: material
+        });
         meshWrapper.add(mesh);
 
         const boundingBox = new THREE.Box3().setFromObject(mesh);
@@ -46,8 +50,10 @@ const plyLoader = (
         meshWrappers.push(meshWrapper);
       }
 
-      meshes[max.id].material = gumMaterial;
-
+      meshes[max.id].material = new THREE.MeshLambertMaterial(gumMaterial);
+      setState(meshes[max.id].name, {
+        material: gumMaterial
+      })
       const result: rt = {
         meshes: meshes,
         wrappers: meshWrappers,

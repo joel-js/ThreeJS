@@ -21,3 +21,16 @@ type propVal = {
 }
 
 export type MaterailProps = Array<propVal>;
+
+export type state = {
+  material: Object
+}
+export type stateArray ={
+  [key: string]: state
+};
+
+export enum Mode {
+  Translate = 'translate',
+  Rotate = 'rotate',
+  Scale = 'scale'
+}
