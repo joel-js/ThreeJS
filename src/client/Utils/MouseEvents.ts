@@ -2,7 +2,7 @@ import * as THREE from "three";
 import SceneInit from "../SceneInit";
 import TransformControl from "../Controls/TransformControl";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
-import { getState } from "../State/MaterialState";
+import { getState } from "../StateManagement/StateManager";
 
 class MouseEvents {
   private main: SceneInit;

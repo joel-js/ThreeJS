@@ -4,7 +4,7 @@ import { Mesh, Mouse, Wrapper } from './Utils/types';
 import * as dat from "dat.gui";
 
 export default class SceneInit {
-  private readonly _scene: THREE.Scene;
+  private  _scene: THREE.Scene;
   private readonly _camera: THREE.PerspectiveCamera;
   private readonly _renderer: THREE.WebGLRenderer;
   private readonly _controller: OrbitControls;
@@ -65,6 +65,10 @@ export default class SceneInit {
   public get mouse(): Mouse {
     return this._mouse;
   }
+  
+  public get directionalLight(): THREE.DirectionalLight {
+    return this._directionalLight
+  }
 
   public set meshes(meshes: Array<Mesh>) {
     this._meshes = meshes;
@@ -82,10 +86,12 @@ export default class SceneInit {
     this._mouse = mouse;
   }
 
+  public set scene(scene: THREE.Scene) {
+    this._scene = scene;
+  }
   public render = () => {
     this._renderer.render(this._scene, this._camera);
   }
-
   public updateLightWithCamera() {
     this._directionalLight.position.copy(this.camera.position);
     this._directionalLight.target.position.copy(

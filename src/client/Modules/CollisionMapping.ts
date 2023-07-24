@@ -4,7 +4,7 @@ import SceneInit from "../SceneInit";
 import { Arrow, getLocalY, negativeVector } from "../Utils/HelperFunctions";
 import { Wrapper, Mesh, V3, Mode } from "../Utils/types";
 import { OccColorMap } from "../Utils/constants";
-import { getState, setState } from "../State/MaterialState";
+import { getState, updateState } from "../StateManagement/StateManager";
 import TransformControl from "../Controls/TransformControl";
 
 // dist >= 0.7	: no contact -> white
@@ -74,21 +74,19 @@ class CollisionMapping {
             const neg_intersects: THREE.Intersection[] | undefined =
               neg_raycaster.intersectObject(boxMesh, false);
 
-              if (neg_intersects.length) {
-                const neg_dist: number = neg_intersects[0].distance;
-                if (1 > neg_dist && neg_dist > 0){
-                  colorArray.set(OccColorMap.red, i * 3);
-                } else if (neg_dist >= 1) {
-                  colorArray.set(OccColorMap.pink, i * 3);
-                }
+            if (neg_intersects.length) {
+              const neg_dist: number = neg_intersects[0].distance;
+              if (1 > neg_dist && neg_dist > 0){
+                colorArray.set(OccColorMap.red, i * 3);
+              } else if (neg_dist >= 1) {
+                colorArray.set(OccColorMap.pink, i * 3);
               }
+            }
             else if (intersects.length) {
               const dist: number = intersects[0].distance;
-              
               if (6 > dist && dist >= 3) {
                 colorArray.set(OccColorMap.green, i * 3);
               } 
-              
               else if (3 > dist && dist >= 0) {
                 colorArray.set(OccColorMap.blue, i * 3);
               }
@@ -111,9 +109,8 @@ class CollisionMapping {
 
       const mesh = this.meshes[i];
       const wrapper = this.wrappers[i];
-      const curr_state = getState(mesh.name);
-      const new_state = _.merge(curr_state, { material: { vertexColors: true, side: THREE.DoubleSide } });
-      setState(mesh.name, new_state);
+      const payload = { material: { vertexColors: true, side: THREE.DoubleSide } };
+      updateState(mesh.name, payload);
       mesh.material = new THREE.MeshLambertMaterial(getState(mesh.name).material);
       const boxGeometry = new THREE.SphereGeometry(3); // Width and height of the box
   

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import SceneInit from "../SceneInit";
 import { Mesh } from "../Utils/types";
-import { getState, setState } from "../State/MaterialState";
+import { getState, setState } from "../StateManagement/StateManager";
 import * as _ from 'lodash';
 
 const iterate = (meshes: Mesh[], val: number) => {

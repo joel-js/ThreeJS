@@ -5,7 +5,7 @@ import { files } from "./Utils/constants";
 import { Mesh, Wrapper } from "./Utils/types";
 import SceneInit from "./SceneInit";
 import App from "./App";
-import { getState, initial_State } from "./State/MaterialState";
+import { getState, initial_State } from "./StateManagement/StateManager";
 // import { Arrow, getLocalY } from "./Utils/HelperFunctions";
 
 const client = new SceneInit();
@@ -14,8 +14,8 @@ client.scene.add(new THREE.AxesHelper(25));
 client.scene.background = new THREE.Color(0xc9c9d9);
 const mainWrapper = new THREE.Group();
 
-const material: Object = initial_State['teeth'].material;
-const gumMaterial: Object = initial_State['gum'].material;
+const material: Object = initial_State['teeth'].material || {};
+const gumMaterial: Object = initial_State['gum'].material || {};
 const meshes: Mesh[] = [];
 const meshWrappers: Wrapper[] = [];
 

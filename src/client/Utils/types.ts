@@ -23,7 +23,7 @@ type propVal = {
 export type MaterailProps = Array<propVal>;
 
 export type state = {
-  material: Object
+  material?: Object
 }
 export type stateArray ={
   [key: string]: state
@@ -34,3 +34,11 @@ export enum Mode {
   Rotate = 'rotate',
   Scale = 'scale'
 }
+
+export type SqType = {
+  key: number;
+  val: {
+    name: string;
+    [key: string]: any;  // This allows for any number of properties with string keys.
+  }[];
+}[];

@@ -17,11 +17,11 @@ const TransformControl = (client: SceneInit, attachment: (Wrapper | Mesh), other
   }
   if ( restrictModes && defaultMode && restrictModes.includes(defaultMode)) {
     throw new Error(`The mode ${defaultMode} is restricted.`);
-} else {
+  } else {
     control.setMode(defaultMode || Mode.Translate); // find it here
-}
+  }
 
-client.scene.add(control);
+  client.scene.add(control);
   control.attach(attachment);
 
   control.addEventListener("dragging-changed", function (event) {

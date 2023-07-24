@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 import { rt, Mesh, Wrapper } from "../Utils/types";
-import { setState } from "../State/MaterialState";
+import { setState } from "../StateManagement/StateManager";
 
 const plyLoader2 = (files: Array<string>): Promise<THREE.BufferGeometry[]> => {
   const plyModels: Promise<THREE.BufferGeometry>[] = [];
