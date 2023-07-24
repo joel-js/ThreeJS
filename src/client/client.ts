@@ -1,99 +1,117 @@
-import * as THREE from "three";
-import Stats from "three/examples/jsm/libs/stats.module";
-import plyLoader from "./Loaders/plyLoader";
-import { files } from "./Utils/constants";
-import { Mesh, Wrapper } from "./Utils/types";
-import SceneInit from "./SceneInit";
-import App from "./App";
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader';
+import plyLoader from './Loaders/plyLoader';
+import { Mesh, Wrapper } from './Utils/types';
+const scene = new THREE.Scene()
 
-const client = new SceneInit();
-client.initialize();
-client.scene.add(new THREE.AxesHelper(25));
-client.scene.background = new THREE.Color(0xc9c9d9);
-const mainWrapper = new THREE.Group();
+const camera1 = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
+// const camera2 = new THREE.OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)
+// const camera3 = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 1000)
+// const camera4 = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 1000)
+const camera2 = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
+const camera3 = new THREE.PerspectiveCamera(90, 1, 0.1, 1000)
+const camera4 = new THREE.PerspectiveCamera(90, 1, 0.1, 1000)
 
-const material = new THREE.MeshPhongMaterial({
-  color: 0xffffff,
-  transparent: true,
-  opacity: 1
-});
-const gumMaterial = new THREE.MeshPhongMaterial({
-  color: 0xff8080,
-  transparent: true,
-  opacity: 1
-});
+camera1.position.z = 50
+camera2.position.y = 50
+// camera2.lookAt(new THREE.Vector3(0, 0, 0))
+camera3.position.z = -50
+camera4.position.x = 50
+camera4.position.z=-10
+// camera4.lookAt(new THREE.Vector3(0, 0, 0))
+
+const canvas1 = document.getElementById('c1') as HTMLCanvasElement
+const canvas2 = document.getElementById('c2') as HTMLCanvasElement
+const canvas3 = document.getElementById('c3') as HTMLCanvasElement
+const canvas4 = document.getElementById('c4') as HTMLCanvasElement
+const renderer1 = new THREE.WebGLRenderer({ canvas: canvas1 })
+renderer1.setSize(350, 350)
+const renderer2 = new THREE.WebGLRenderer({ canvas: canvas2 })
+renderer2.setSize(350, 350)
+const renderer3 = new THREE.WebGLRenderer({ canvas: canvas3 })
+renderer3.setSize(350, 350)
+const renderer4 = new THREE.WebGLRenderer({ canvas: canvas4 })
+renderer4.setSize(350, 350)
+
+//document.body.appendChild(renderer.domElement)
+
+new OrbitControls(camera1, renderer1.domElement)
+new OrbitControls(camera2, renderer2.domElement)
+new OrbitControls(camera3, renderer3.domElement)
+new OrbitControls(camera4, renderer4.domElement)
+
+// const geometry = new THREE.TorusGeometry()
+// const material = new THREE.MeshBasicMaterial({
+//     color: 0x00ff00,
+//     wireframe: true,
+// })
+const files: Array<string> = [
+    "_gum.ply",
+    "canine-left.ply",
+    "canine-right.ply",
+    "incisor-1-left.ply",
+    "incisor-1-right.ply",
+    "incisor-2-right.ply",
+    "incisor-2-left.ply",
+    "molar-1-left.ply",
+    "molar-1-right.ply",
+    "molar-2-left.ply",
+    "molar-2-right.ply",
+    "premolar-2-left.ply",
+    "premolar-2-right.ply",
+    "premolar-1-left.ply",
+    "premolar-1-right.ply",
+  ];
 const meshes: Mesh[] = [];
 const meshWrappers: Wrapper[] = [];
-
-const ambientLight = new THREE.AmbientLight(0xffffff, 0);
-const directionalLight = new THREE.DirectionalLight();
-directionalLight.position.set(100, 100, 0);
-client.scene.add(ambientLight);
-client.scene.add(directionalLight);
-// const geometry = new THREE.BoxGeometry(1, 1, 1);
-// const material2 = [
-//   new THREE.MeshBasicMaterial({ color: 0xff0000 }), // Front face - red
-//   new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // Back face - green
-//   new THREE.MeshBasicMaterial({ color: 0x0000ff }), // Top face - blue
-//   new THREE.MeshBasicMaterial({ color: 0xffff00 }), // Bottom face - yellow
-//   new THREE.MeshBasicMaterial({ color: 0xff00ff }), // Right face - magenta
-//   new THREE.MeshBasicMaterial({ color: 0x00ffff }), // Left face - cyan
-// ];
-// const mesh = new THREE.Mesh(geometry, material2);
-// client.scene.add(mesh);
-// const axis = new THREE.Vector3(0, 0, 1); // Y-axis
-// const angle = Math.PI / 6;
-// mesh.rotateOnAxis(axis, angle);
-// // console.log('mesh', mesh)
-// // // Get the local Y axis
-// const worldY = new THREE.Vector3(0, 1, 0); // Assuming Y is the local up direction
-// const localY = worldY.applyQuaternion(mesh.quaternion).normalize();
-// // console.log(worldY);
-// // const faceNormalsHelper = new THREE.FaceNormalsHelper(mesh, 1, 0x00ff00, 1);
-// // const box = new THREE.Box3().setFromObject(mesh);
-// // const center = box.getCenter(new THREE.Vector3());
-// // const size = box.getSize(new THREE.Vector3());
-// // const referenceVector = new THREE.Vector3(0, 1, 0); // Reference vector along the y-axis
-// // const normal = new THREE.Vector3().crossVectors(size, referenceVector).normalize();
-// // console.log(mesh);
-// // console.log('Bounding Box Center:', center);
-// // console.log('Bounding Box Size:', size);
-// // console.log('Top Surface Normal:', normal);
-
-// const perpendicular = new THREE.Vector3().crossVectors(localY, new THREE.Vector3(0,0,1));
-// const perpendicular = new THREE.Vector3(0,0,0);
-// console.log('perpendicular', perpendicular.length());
-
-
-// const curve = new THREE.CatmullRomCurve3([
-//   new THREE.Vector3(0,10,0),
-//   new THREE.Vector3(0, 10, 10)
-// ])
-
-// const lineCurve = new THREE.LineCurve3(new THREE.Vector3(0,10,0), new THREE.Vector3(0, 10, 10));
-// const geometry = new THREE.BufferGeometry().setFromPoints(lineCurve.getPoints(10));
-// const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x00fff0 }));
-// client.scene.add(line);
-
+const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const gumMaterial = new THREE.MeshBasicMaterial({ color: 0xff8080 });
+const mainWrapper = new THREE.Group();
 plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
-  .then((result) => {
-    client.meshes = result.meshes;
-    client.wrappers = result.wrappers;
-    result.wrappers.forEach((wrapper) => mainWrapper.add(wrapper));
-    App(client);
-  })
-  .catch((error) => {
-    console.error("Error loading PLY models:", error);
+ .then((result) => {
+    // meshes = result.meshes;
+    // wrappers = result.wrappers;
+  result.wrappers.forEach((wrapper) => { 
+   mainWrapper.add(wrapper)
   });
-client.scene.add(mainWrapper);
+  console.log(mainWrapper);
+  
+ })
+ .catch((error) => {
+  console.error("Error loading PLY models:", error);
+ });
+ scene.add(mainWrapper);
+// const loader = new PLYLoader();
 
-const stats = new Stats();
+//   // Replace 'your_ply_file.ply' with the actual path to your .ply file
+//   loader.load('models/predicted.ply', function (geometry) {
+//     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+//     console.log(geometry);
+    
+//     const mesh = new THREE.Mesh(geometry, material);
+//     console.log(mesh);
+    
+//     scene.add(mesh);
+//     animate()})
 
-const animate = (): void => {
-  requestAnimationFrame(animate);
-  client.updateLightWithCamera();
-  client.controller.update();
-  client.render();
-  stats.update();
-};
-animate();
+// const cube = new THREE.Mesh(geometry, material)
+// scene.add(cube)
+
+function animate() {
+    requestAnimationFrame(animate)
+
+    // cube.rotation.x += 0.01
+    // cube.rotation.y += 0.01
+
+    render()
+}
+
+function render() {
+    renderer1.render(scene, camera1)
+    renderer2.render(scene, camera2)
+    renderer3.render(scene, camera3)
+    renderer4.render(scene, camera4)
+}
+
+animate()
