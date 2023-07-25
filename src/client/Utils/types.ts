@@ -35,10 +35,10 @@ export enum Mode {
   Scale = 'scale'
 }
 
-export type SqType = {
-  key: number;
-  val: {
-    name: string;
-    [key: string]: any;  // This allows for any number of properties with string keys.
-  }[];
-}[];
+// export type SqType = {
+//   key: number;
+//   val: {
+//     name: string;
+//     [key: string]: any;  // This allows for any number of properties with string keys.
+//   }[];
+// }[];

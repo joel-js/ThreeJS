@@ -53,7 +53,7 @@ const App = (main: SceneInit) => {
 
   const saveScene = () => {
     console.log('main ',main);
-    console.log('json',main.scene.toJSON());
+    console.log('type ', main.toJSON());
     const sceneData = _.cloneDeep(main.scene.toJSON());
     sceneData['metadata'].name = sceneData['metadata'].name === undefined ? 0:  sceneData['metadata'].name++ ;
     console.log(sceneData['metadata'].name);

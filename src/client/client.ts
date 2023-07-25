@@ -2,10 +2,12 @@ import * as THREE from "three";
 import Stats from "three/examples/jsm/libs/stats.module";
 import plyLoader from "./Loaders/plyLoader";
 import { files } from "./Utils/constants";
-import { Mesh, Wrapper } from "./Utils/types";
+import { Mesh, Mode, Wrapper } from "./Utils/types";
 import SceneInit from "./SceneInit";
 import App from "./App";
 import { getState, initial_State } from "./StateManagement/StateManager";
+import TransformControl from "./Controls/TransformControl";
+import { sqSave } from "./StateManagement/SceneManager";
 // import { Arrow, getLocalY } from "./Utils/HelperFunctions";
 
 const client = new SceneInit();
@@ -18,21 +20,44 @@ const material: Object = initial_State['teeth'].material || {};
 const gumMaterial: Object = initial_State['gum'].material || {};
 const meshes: Mesh[] = [];
 const meshWrappers: Wrapper[] = [];
+const cubegeometry = new THREE.BoxGeometry(1,1,1);
+const cube = new THREE.Mesh(cubegeometry, new THREE.MeshLambertMaterial(gumMaterial));
+cube.name = 'cube';
+const cubeWrapper = new THREE.Group();
+cubeWrapper.name = 'cubeWrapper';
+cubeWrapper.add(cube);
+mainWrapper.add(cubeWrapper);
+meshes.push(cube);
+meshWrappers.push(cubeWrapper);
 
+const cube2 = new THREE.Mesh(cubegeometry, new THREE.MeshLambertMaterial(gumMaterial));
+const cubeWrapper2 = new THREE.Group();
+cube2.name = 'cube2';
+cubeWrapper2.name = 'cubeWrapper2';
+cubeWrapper2.position.set(5, 0, 0);
+cubeWrapper2.add(cube2);
+mainWrapper.add(cubeWrapper2);
+meshes.push(cube2);
+meshWrappers.push(cubeWrapper2);
 
-
-plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
-  .then((result) => {
-    client.meshes = result.meshes;
-    client.wrappers = result.wrappers;
-    result.wrappers.forEach((wrapper) => { 
-      mainWrapper.add(wrapper)
-    });
-    App(client);
-  })
-  .catch((error) => {
-    console.error("Error loading PLY models:", error);
-  });
+const callBack = (attachment: Mesh | Wrapper, mode: Mode) => {
+  sqSave(attachment, mode)
+  console.log(attachment)
+};
+const transformControl = TransformControl(client, cubeWrapper, callBack);
+const transformControl2 = TransformControl(client, cubeWrapper2, callBack);
+// plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
+//   .then((result) => {
+//     client.meshes = result.meshes;
+//     client.wrappers = result.wrappers;
+//     result.wrappers.forEach((wrapper) => { 
+//       mainWrapper.add(wrapper)
+//     });
+//     App(client);
+//   })
+//   .catch((error) => {
+//     console.error("Error loading PLY models:", error);
+//   });
 client.scene.add(mainWrapper);
 const stats = new Stats();
 

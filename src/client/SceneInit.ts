@@ -116,4 +116,13 @@ export default class SceneInit {
 
     window.addEventListener("resize", this.onWindowResize, false);
   };
+
+  public toJSON(): object {
+    const serializedScene = {
+      meshes: this._meshes.map(mesh => mesh.toJSON()),
+      wrappers: this._wrappers.map(wrapper => wrapper.toJSON()),
+      directionalLight: this._directionalLight.toJSON(),
+    };
+    return serializedScene;
+  }
 }
