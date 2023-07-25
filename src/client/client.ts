@@ -7,9 +7,14 @@ import SceneInit from "./SceneInit";
 import App from "./App";
 import { getState, initial_State } from "./StateManagement/StateManager";
 import TransformControl from "./Controls/TransformControl";
-import { sqSave } from "./StateManagement/SceneManager";
+// import { sqSave } from "./StateManagement/SequentialManager";
 // import { Arrow, getLocalY } from "./Utils/HelperFunctions";
-
+const printMat = (a: THREE.Matrix4) => {
+  const array = a.toArray();
+  for (let i = 0; i < 4; i++) {
+    console.log(array.slice(i * 4, i * 4 + 4).join(' '));
+  }
+}
 const client = new SceneInit();
 client.initialize();
 client.scene.add(new THREE.AxesHelper(25));
@@ -29,23 +34,35 @@ cubeWrapper.add(cube);
 mainWrapper.add(cubeWrapper);
 meshes.push(cube);
 meshWrappers.push(cubeWrapper);
-
-const cube2 = new THREE.Mesh(cubegeometry, new THREE.MeshLambertMaterial(gumMaterial));
-const cubeWrapper2 = new THREE.Group();
-cube2.name = 'cube2';
-cubeWrapper2.name = 'cubeWrapper2';
-cubeWrapper2.position.set(5, 0, 0);
-cubeWrapper2.add(cube2);
-mainWrapper.add(cubeWrapper2);
-meshes.push(cube2);
-meshWrappers.push(cubeWrapper2);
+// console.log(cubeWrapper.matrix, cubeWrapper.matrixWorld);
+printMat(cube.matrix)
+printMat(cube.matrixWorld)
+// cubeWrapper.position.copy(new THREE.Vector3(0,5,0));
+// console.log('cubeWrapper POS', cubeWrapper.position);
+// console.log('cube POS',cube.position, cube);
+// const cube2 = new THREE.Mesh(cubegeometry, new THREE.MeshLambertMaterial(gumMaterial));
+// const cubeWrapper2 = new THREE.Group();
+// cube2.name = 'cube2';
+// cubeWrapper2.name = 'cubeWrapper2';
+// cubeWrapper2.position.set(5, 0, 0);
+// cubeWrapper2.add(cube2);
+// mainWrapper.add(cubeWrapper2);
+// meshes.push(cube2);
+// meshWrappers.push(cubeWrapper2);
 
 const callBack = (attachment: Mesh | Wrapper, mode: Mode) => {
-  sqSave(attachment, mode)
-  console.log(attachment)
+  // sqSave(attachment, mode)
+  // console.log(attachment)
+console.log('**************************');
+  printMat(attachment.children[0].matrix)
+  console.log(" --------- ");
+  printMat(attachment.children[0].matrixWorld)    
+  console.log('----------- ')
 };
 const transformControl = TransformControl(client, cubeWrapper, callBack);
-const transformControl2 = TransformControl(client, cubeWrapper2, callBack);
+console.log(cubeWrapper);
+
+// const transformControl2 = TransformControl(client, cubeWrapper2, callBack);
 // plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
 //   .then((result) => {
 //     client.meshes = result.meshes;

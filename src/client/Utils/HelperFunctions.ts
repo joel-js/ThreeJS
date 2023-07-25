@@ -138,6 +138,7 @@ export const xantiClockWise = (wrapper: Wrapper, axis: V3) => {
 };
 
 export const negativeVector = (v: V3): V3 => new THREE.Vector3(-v.x, -v.y, -v.z); 
+export const addScalar = (v: V3, n: V3): V3 => new THREE.Vector3(v.x+n.x, v.y+n.y, v.z+n.z);
 
 export const ArchWire = (main: SceneInit, v1: V3 = new THREE.Vector3(), v2: V3 = new THREE.Vector3()) => {
   const lineCurve = new THREE.LineCurve3(v1, v2);
