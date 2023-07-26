@@ -35,6 +35,12 @@ export enum Mode {
   Scale = 'scale'
 }
 
+export type Coord = {
+  x: number,
+  y: number,
+  z: number
+}
+
 // export type SqType = {
 //   key: number;
 //   val: {
