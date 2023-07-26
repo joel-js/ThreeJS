@@ -3,12 +3,14 @@ import * as _ from 'lodash';
 import * as dat from "dat.gui";
 
 import SceneInit from "./SceneInit";
+
 import MouseEvents from './Utils/MouseEvents';
 import TeethMovements from "./Modules/TeethMovements";
 import CollisionMapping from './Modules/CollisionMapping';
+import Attachments from './Modules/Attachments';
 
 import Transparency from './Modules/Transparency';
-import Attachments from './Modules/Attachments';
+
 const App = (main: SceneInit) => {
   Transparency(main);
   const mouseEvents = new MouseEvents(main);
@@ -21,7 +23,7 @@ const App = (main: SceneInit) => {
   colMap.execute();
 
   const loadedScenes: any = [];
-  let currentSceneIndex: number = 0;
+  let currentSceneIndex: number = -1;
   const slider = document.createElement('input');
   slider.type = 'range';
   slider.id = 'sceneSlider';
@@ -47,40 +49,50 @@ const App = (main: SceneInit) => {
   forwardButton.disabled = true;
 
   const updateButtons = () => {
+    console.log('update curr', currentSceneIndex);
     backButton.disabled = currentSceneIndex === 0;
     forwardButton.disabled = currentSceneIndex === loadedScenes.length - 1;
   };
 
   const saveScene = () => {
-    console.log('main ',main);
-    console.log('type ', main.toJSON());
+    // console.log('main ',main);
+    // console.log('type ', main.toJSON());
     const sceneData = _.cloneDeep(main.scene.toJSON());
-    sceneData['metadata'].name = sceneData['metadata'].name === undefined ? 0:  sceneData['metadata'].name++ ;
-    console.log(sceneData['metadata'].name);
+    // sceneData['metadata'].name = sceneData['metadata'].name === undefined ? 0:  sceneData['metadata'].name = 'new' ;
+    console.log('name ',sceneData['metadata'].name);
+    console.log(sceneData);
     loadedScenes.push(sceneData);
+
     // updateSlider();
+    currentSceneIndex++;
     updateButtons();
   }
-  const loadScene = () => {
-    if (currentSceneIndex >= 0 && currentSceneIndex < loadedScenes.length) {
+  const loadScene = (index: number) => {
+    if (index >= 0 && index < loadedScenes.length) {
       main.scene.clear();
-      const sceneData = loadedScenes[currentSceneIndex];
+      const sceneData = loadedScenes[index];
       main.scene = new THREE.ObjectLoader().parse(sceneData);
       main.scene.add(main.camera);
       main.renderer.render(main.scene, main.camera);
-      console.log(main.scene);
+      // // console.log(main.scene);
+      currentSceneIndex = index
+      console.log(loadedScenes);
+      // console.log(" index curr",index, currentSceneIndex);
       updateButtons();
     }
   }
 
   backButton.addEventListener('click', () => {
-    currentSceneIndex -= 1;
-    loadScene();
+    // currentSceneIndex -= 1;
+    loadScene(currentSceneIndex -1);
+    // loadScene();
   });
 
   forwardButton.addEventListener('click', () => {
-    currentSceneIndex += 1;
-    loadScene();
+    // currentSceneIndex += 1;
+    loadScene(currentSceneIndex +1);
+    // loadScene();
+
   });
 
   // const sliderContainer = new dat.GUI().addFolder('Scene Slider');
@@ -98,6 +110,7 @@ const App = (main: SceneInit) => {
   buttonContainer.open();
 
   main.gui.add({ 'Save Scene': saveScene }, 'Save Scene')
+
 }
 
 export default App;
