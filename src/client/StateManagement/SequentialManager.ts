@@ -1,18 +1,21 @@
+import { Object3D } from 'three';
 import { V3 } from '../Utils/types';
-
-type Payload = undefined | {
-  position: V3
+import * as _ from 'lodash';
+type Payload = {
+  type: string,
+  position?: V3,
+  create?: Object3D
 }
 
 class State {
 
-  protected name: string;
-  protected prev: string;
-  protected payload: Payload;
+  public name: string;
+  // public prev: string;
+  public payload: Payload;
 
-  constructor(name: string, prev: string, payload ?: Payload) {
+  constructor(name: string, payload : Payload) {
     this.name = name;
-    this.prev = prev;
+    // this.prev = prev;
     this.payload= payload;
   }
   
@@ -24,18 +27,23 @@ class State {
   }
 
 };
-let last: string = '';
-const sequence = new Map();
+const sequence: Array<State> = [];
+let last: number = sequence.length-1;
 
-export const _get = (name: string): State | undefined => sequence.get(name)
+export const _get = (): State | undefined => _.cloneDeep(sequence[last])
 
-export const _set = (name: string, payload ?: Payload) => {
-  if (sequence.has(name)) {
-    const prev = sequence.get(name).prev;
-    sequence.set(name, new State(name, prev, payload || undefined));
+export const _set = (name: string, payload : Payload) => {
+  if (sequence[last]?.name === name) {
+    if (payload.type === sequence[last].payload.type){
+      sequence[last].payload =  _.cloneDeep(payload);
+    } else {
+      last++;
+      sequence.push(new State(name, payload));
+    }
   }
   else {
-    sequence.set(name, new State(name,last, payload || undefined));
-    last = name; 
+    last++;
+    sequence.push(new State(name, payload));
   }
+  console.log(sequence);
 }
