@@ -7,6 +7,7 @@ import SceneInit from "./SceneInit";
 import App from "./App";
 import { initial_State } from "./StateManagement/StateManager";
 import { WrapperComponent } from "./Components/WrapperComponent";
+import { goBack } from "./StateManagement/SequentialManager";
 
 const client = new SceneInit();
 client.initialize();
@@ -21,11 +22,23 @@ const meshWrappers: Wrapper[] = [];
 
 const wrapper = new WrapperComponent('wrapper');
 const cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshLambertMaterial(gumMaterial));
-wrapper.add(cube);
+const cube2 = new THREE.Mesh(new THREE.BoxGeometry(2,2,2), new THREE.MeshLambertMaterial(material));
+
+wrapper._add(cube);
 wrapper._position = {x: 5, y: 0, z: 0 };
-// console.log(wrapper.position);
-console.log('posclient ',wrapper._position);
+wrapper._position = {x: 0, y: 5, z: 0 };
 mainWrapper.add(wrapper);
+client.wrappers.push(wrapper);
+setTimeout(() => {
+  goBack(client);
+}, 5000)
+// const wrapper2Action = sequence[2]
+// const wrapper2 = sequence[0].payload.create
+// if (wrapper2){
+//   wrapper2.add(cube2)
+//   mainWrapper.add(wrapper2)
+// } 
+// if (wrapper2) mainWrapper.add(wrapper2)
 // plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
 //   .then((result) => {
 //     client.meshes = result.meshes;

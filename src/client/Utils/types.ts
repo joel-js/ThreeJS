@@ -11,34 +11,55 @@ export type Mouse = THREE.Vector2 & {
 };
 
 export type WrapperLocalAxes = {
-  prev: V3,
-  next: V3
+  prev: V3;
+  next: V3;
 };
 
 type propVal = {
-  prop: string,
-  val: any
-}
+  prop: string;
+  val: any;
+};
 
 export type MaterailProps = Array<propVal>;
 
 export type state = {
-  material?: Object
-}
-export type stateArray ={
-  [key: string]: state
+  material?: Object;
+};
+export type stateArray = {
+  [key: string]: state;
 };
 
 export enum Mode {
-  Translate = 'translate',
-  Rotate = 'rotate',
-  Scale = 'scale'
+  Translate = "translate",
+  Rotate = "rotate",
+  Scale = "scale",
 }
 
 export type Coord = {
-  x: number,
-  y: number,
-  z: number
+  x: number;
+  y: number;
+  z: number;
+};
+
+export type Payload = {
+  payload_id: number;
+  action: string;
+  position?: V3;
+  rotation?: THREE.Euler;
+  scale?: V3;
+  create?: THREE.Object3D;
+  add?: THREE.Mesh;
+};
+
+export enum track {
+  inactive,
+  active,
+}
+
+export interface Node<T> {
+  value: T;
+  prev: Node<T> | null;
+  next: Node<T> | null;
 }
 
 // export type SqType = {
