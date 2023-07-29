@@ -2,7 +2,7 @@ import * as THREE from "three";
 import Stats from "three/examples/jsm/libs/stats.module";
 import plyLoader from "./Loaders/plyLoader";
 import { files } from "./Utils/constants";
-import { Mesh, Mode, Wrapper } from "./Utils/types";
+import { MeshType, Mode, WrapperType } from "./Utils/types";
 import SceneInit from "./SceneInit";
 import App from "./App";
 import { initial_State } from "./StateManagement/StateManager";
@@ -17,8 +17,8 @@ const mainWrapper = new THREE.Group();
 
 const material: Object = initial_State['teeth'].material || {};
 const gumMaterial: Object = initial_State['gum'].material || {};
-const meshes: Mesh[] = [];
-const meshWrappers: Wrapper[] = [];
+const meshes: MeshType[] = [];
+const meshWrappers: WrapperType[] = [];
 
 const wrapper = new WrapperComponent('wrapper');
 const cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshLambertMaterial(gumMaterial));

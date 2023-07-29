@@ -1,12 +1,12 @@
 import * as THREE from "three";
 import * as _ from "lodash";
-import { V3, Coord, Mesh } from "../Utils/types";
+import { V3, Coord, MeshType } from "../Utils/types";
 import { ComponentState } from "../StateManagement/ComponentState";
 import { _track } from "../StateManagement/SequentialManager";
 
 export class WrapperComponent extends THREE.Group {
   private wposition: V3;
-  private mesh: Mesh;
+  private mesh: MeshType;
   public name: string;
   private state: ComponentState;
   constructor(name: string) {

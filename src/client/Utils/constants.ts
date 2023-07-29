@@ -16,7 +16,7 @@ export const files: Array<string> = [
   "premolar-1-left.ply",
   "premolar-1-right.ply",
 ];
-export const VectorMap: Array<String> = [
+export const VectorMapFiles: Array<string> = [
   "molar-2-left.ply",
   "molar-1-left.ply",
   "premolar-2-left.ply",
@@ -34,10 +34,10 @@ export const VectorMap: Array<String> = [
 ];
 
 export const OccColorMap: { [key: string]: Array<number> } = {
-  'red': [1.0, 0.0, 0.0],
-  'green': [0.0, 1.0, 0.0],
-  'blue': [0.0, 0.0, 1.0],
-  'cyan': [0.0, 1.0, 1.0],
-  'pink': [1.0, 0.0, 1.0],
-  'yellow': [1.0, 1.0, 0.0]
+  red: [1.0, 0.0, 0.0],
+  green: [0.0, 1.0, 0.0],
+  blue: [0.0, 0.0, 1.0],
+  cyan: [0.0, 1.0, 1.0],
+  pink: [1.0, 0.0, 1.0],
+  yellow: [1.0, 1.0, 0.0],
 };

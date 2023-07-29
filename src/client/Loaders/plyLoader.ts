@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
-import { rt, Mesh, Wrapper } from "../Utils/types";
+import { rt, MeshType, WrapperType } from "../Utils/types";
 import { setState } from "../StateManagement/StateManager";
 
 const plyLoader2 = (files: Array<string>): Promise<THREE.BufferGeometry[]> => {
@@ -14,8 +14,8 @@ const plyLoader2 = (files: Array<string>): Promise<THREE.BufferGeometry[]> => {
 
 const plyLoader = (
   files: Array<string>,
-  meshes: Array<Mesh>,
-  meshWrappers: Array<Wrapper>,
+  meshes: Array<MeshType>,
+  meshWrappers: Array<WrapperType>,
   [material, gumMaterial]: Object[]
 ): Promise<rt> => {
   return new Promise<rt>((resolve) => {

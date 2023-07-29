@@ -3,21 +3,21 @@ import * as _ from 'lodash';
 import { Object3D } from "three";
 import { Payload, track } from "../Utils/types";
 import { _set, _State } from "./SequentialManager";
-import { DoublyLinkedList2 } from '../Utils/HelperFunctions';
+import DoublyLinkedList from '../Utils/DoublyLinkedList';
 
 export class ComponentState {
   public name: string;
   public type: string;
   public obj: Object3D;
-  public delta: DoublyLinkedList2<Payload>;
-  constructor(name: string, type: string, obj: Object3D, _sq: track) {
+  public delta: DoublyLinkedList<Payload>;
+  constructor(name: string, type: string, obj: Object3D, _track: track) {
     this.name = name;
     this.type = type;
     this.obj = obj;
-    this.delta = new DoublyLinkedList2<Payload>();
+    this.delta = new DoublyLinkedList<Payload>();
     this.initialize = this.initialize.bind(this);
     this.set = this.set.bind(this);
-    _sq && this.initialize(obj);
+    _track && this.initialize(obj);
   }
 
   private addToSequence(): boolean{
@@ -32,9 +32,7 @@ export class ComponentState {
     this.delta.push(payload)
     const isUpdate: boolean = this.addToSequence();
     let last = this.delta.length-1;
-    // console.log('last ', last, isUpdate);
     if(isUpdate){
-
         this.delta.delete(last-1);
     }
     console.log('each delta ***********');

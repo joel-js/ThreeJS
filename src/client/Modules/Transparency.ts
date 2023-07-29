@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import SceneInit from "../SceneInit";
-import { Mesh } from "../Utils/types";
+import { MeshType } from "../Utils/types";
 import { getState, setState } from "../StateManagement/StateManager";
 import * as _ from 'lodash';
 
-const iterate = (meshes: Mesh[], val: number) => {
+const iterate = (meshes: MeshType[], val: number) => {
   meshes.forEach((mesh) => {
     const curr_state = getState(mesh.name);
     const new_state  = _.merge(curr_state, {material: { opacity: 1-val }})

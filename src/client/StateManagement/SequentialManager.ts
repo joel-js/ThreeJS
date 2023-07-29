@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import * as _ from "lodash";
 import SceneInit from "../SceneInit";
-import { DoublyLinkedList2 } from "../Utils/HelperFunctions";
+import DoublyLinkedList from "../Utils/DoublyLinkedList";
 import { Payload, track, V3 } from "../Utils/types";
 import { WrapperComponent } from "../Components/WrapperComponent";
 
@@ -19,7 +19,7 @@ export class _State {
 }
 
 // export const sequence: Array<_State> = [];
-export const sequence= new DoublyLinkedList2<_State>();
+export const sequence= new DoublyLinkedList<_State>();
 let last: number = sequence.length - 1;
 let sq_index = sequence.length - 1;
 let curr_index: number = -1;
@@ -47,7 +47,7 @@ export const _set = (state: _State): boolean => {
 };
 
 const reversePosition = (
-  history: DoublyLinkedList2<Payload>,
+  history: DoublyLinkedList<Payload>,
   wrapper: WrapperComponent,
   curr_state: _State
 ) => {
@@ -72,7 +72,7 @@ export const goBack = (main: SceneInit) => {
   console.log("curr_state", curr_state);
 
   main.wrappers.forEach((wrapper) => {
-    const history: DoublyLinkedList2<Payload> = wrapper.componentHistory().delta;
+    const history: DoublyLinkedList<Payload> = wrapper.componentHistory().delta;
     if (curr_state?.payload.action === "position") {
       reversePosition(history, wrapper, curr_state);
     }

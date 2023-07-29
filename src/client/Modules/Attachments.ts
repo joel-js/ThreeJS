@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import SceneInit from "../SceneInit";
-import { Wrapper, V3 } from "../Utils/types";
+import { WrapperType, V3 } from "../Utils/types";
 
 class Attachments {
   private main: SceneInit;
@@ -42,7 +42,7 @@ class Attachments {
       attachment.rotateX(Math.PI / 2);
       attachment.position.copy(this.intersects[0].point);
       attachment.position.addScaledVector(n, 0.1); // so it submerges inside to the surface
-      this.main.wrappers.forEach((wrapper: Wrapper) => {
+      this.main.wrappers.forEach((wrapper: WrapperType) => {
         if (wrapper.name === this.intersects[0].object.name) {
           const actualPos = new THREE.Vector3().subVectors(
             attachment.position,

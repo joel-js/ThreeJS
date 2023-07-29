@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import SceneInit from "../SceneInit";
-import TransformControl from "../Controls/TransformControl";
-import { TransformControls } from "three/examples/jsm/controls/TransformControls";
+import { MeshType } from '../Utils/types';
 import { getState } from "../StateManagement/StateManager";
 
 class MouseEvents {
@@ -41,7 +40,7 @@ class MouseEvents {
     } else {
       this.intersectObject = null;
     }
-    this.main.meshes.forEach((mesh: THREE.Mesh, i: number) => {
+    this.main.meshes.forEach((mesh: MeshType, i: number) => {
       if (this.intersectObject && this.intersectObject.name === mesh.name) {
         mesh.material = new THREE.MeshBasicMaterial({ wireframe: true });
       } else {

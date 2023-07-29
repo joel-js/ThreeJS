@@ -1,9 +1,9 @@
-export type Wrapper = THREE.Group;
-export type Mesh = THREE.Mesh;
+export type WrapperType = THREE.Group;
+export type MeshType = THREE.Mesh;
 export type V3 = THREE.Vector3;
 export type rt = {
-  meshes: Array<Mesh>;
-  wrappers: Array<Wrapper>;
+  meshes: Array<MeshType>;
+  wrappers: Array<WrapperType>;
 };
 export type Mouse = THREE.Vector2 & {
   x: number;
@@ -61,11 +61,3 @@ export interface Node<T> {
   prev: Node<T> | null;
   next: Node<T> | null;
 }
-
-// export type SqType = {
-//   key: number;
-//   val: {
-//     name: string;
-//     [key: string]: any;  // This allows for any number of properties with string keys.
-//   }[];
-// }[];

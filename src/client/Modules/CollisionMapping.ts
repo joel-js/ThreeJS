@@ -2,7 +2,7 @@ import * as THREE from "three";
 import * as _ from 'lodash';
 import SceneInit from "../SceneInit";
 import { Arrow, getLocalY, negativeVector } from "../Utils/HelperFunctions";
-import { Wrapper, Mesh, V3, Mode } from "../Utils/types";
+import { WrapperType, MeshType, V3, Mode } from "../Utils/types";
 import { OccColorMap } from "../Utils/constants";
 import { getState, updateState } from "../StateManagement/StateManager";
 import TransformControl from "../Controls/TransformControl";
@@ -15,8 +15,8 @@ import TransformControl from "../Controls/TransformControl";
 
 class CollisionMapping {
   main: SceneInit;
-  meshes: Mesh[];
-  wrappers: Wrapper[];
+  meshes: MeshType[];
+  wrappers: WrapperType[];
   gui: dat.GUI;
   constructor(main: SceneInit) {
     this.main = main;
@@ -25,7 +25,7 @@ class CollisionMapping {
     this.gui = main.gui;
   }
 
-  private logic(boxMesh: Mesh, mesh: Mesh, targetVector: V3) {
+  private logic(boxMesh: MeshType, mesh: MeshType, targetVector: V3) {
     boxMesh.updateMatrixWorld(true);
     const geometry = mesh.geometry;
     if (geometry.isBufferGeometry) {

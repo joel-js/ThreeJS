@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import SceneInit from "../SceneInit";
-import { Wrapper, V3 } from "../Utils/types";
+import { WrapperType, V3 } from "../Utils/types";
 import {
   findTranslateAxis,
   getLocalY,
@@ -35,14 +35,14 @@ class TeethMovements {
     this.moveTeeth = this.moveTeeth.bind(this);
   }
 
-  private mesial(wrapper: Wrapper) {
+  private mesial(wrapper: WrapperType) {
     wrapper.position.add(
       // findTranslateAxis(this.main.wrappers, wrapper).next.multiplyScalar(0.1)
       prevNext(this.main.wrappers, wrapper).multiplyScalar(0.01)
     );
   }
 
-  private distal(wrapper: Wrapper) {
+  private distal(wrapper: WrapperType) {
     wrapper.position.add(
       // findTranslateAxis(this.main.wrappers, wrapper).prev.multiplyScalar(0.1)
       prevNext(this.main.wrappers, wrapper).negate().multiplyScalar(0.01)
@@ -50,7 +50,7 @@ class TeethMovements {
     );
   }
 
-  private buccal(wrapper: Wrapper) {
+  private buccal(wrapper: WrapperType) {
     const buccalAxis: V3 = new THREE.Vector3()
       .crossVectors(
         getLocalY(wrapper),
@@ -64,7 +64,7 @@ class TeethMovements {
     wrapper.position.add(this.buccalLigualAxis[wrapper.name]);
   }
 
-  private ligual(wrapper: Wrapper) {
+  private ligual(wrapper: WrapperType) {
     const ligualAxis: V3 = new THREE.Vector3().crossVectors(
       getLocalY(wrapper),
       findTranslateAxis(this.main.wrappers, wrapper).next.normalize()
@@ -75,7 +75,7 @@ class TeethMovements {
     wrapper.position.add(negativeVector(this.buccalLigualAxis[wrapper.name]));
   }
 
-  private moveTeeth(wrapper: Wrapper) {
+  private moveTeeth(wrapper: WrapperType) {
     if (this.keydownListener) {
       window.removeEventListener("keydown", this.keydownListener);
     }

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Mesh, Mouse, Wrapper } from './Utils/types';
+import { MeshType, Mouse, WrapperType } from './Utils/types';
 import { WrapperComponent } from "./Components/WrapperComponent";
 import * as dat from "dat.gui";
 
@@ -9,8 +9,9 @@ export default class SceneInit {
   private readonly _camera: THREE.PerspectiveCamera;
   private readonly _renderer: THREE.WebGLRenderer;
   private readonly _controller: OrbitControls;
-  private _meshes: Array<Mesh>;
+  private _meshes: Array<MeshType>;
   private _wrappers: Array<WrapperComponent>;
+  // private _wrappers: Array<WrapperType>;
   private _raycaster: THREE.Raycaster;
   private _mouse: Mouse;
   private _ambientLight: THREE.AmbientLight;
@@ -51,11 +52,12 @@ export default class SceneInit {
     return this._controller;
   }
 
-  public get meshes(): Array<Mesh> {
+  public get meshes(): Array<MeshType> {
     return this._meshes;
   }
 
   public get wrappers(): Array<WrapperComponent> {
+  // public get wrappers(): Array<WrapperType> {
     return this._wrappers;
   }
 
@@ -71,11 +73,12 @@ export default class SceneInit {
     return this._directionalLight
   }
 
-  public set meshes(meshes: Array<Mesh>) {
+  public set meshes(meshes: Array<MeshType>) {
     this._meshes = meshes;
   }
 
   public set wrappers(wrappers: Array<WrapperComponent>) {
+  // public set wrappers(wrappers: Array<WrapperType>) {
     this._wrappers = wrappers;
   }
 

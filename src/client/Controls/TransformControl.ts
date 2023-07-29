@@ -2,9 +2,9 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import SceneInit from "../SceneInit";
-import { Mesh, Mode, Wrapper } from '../Utils/types';
+import { MeshType, Mode, WrapperType } from '../Utils/types';
 
-const TransformControl = (client: SceneInit, attachment: (Wrapper | Mesh), callBack?: Function,otherControls?: (OrbitControls | TransformControls)[], defaultMode?: Mode, restrictModes ?: Array<Mode>): TransformControls => {
+const TransformControl = (client: SceneInit, attachment: (WrapperType | MeshType), callBack?: Function,otherControls?: (OrbitControls | TransformControls)[], defaultMode?: Mode, restrictModes ?: Array<Mode>): TransformControls => {
   
   const control = new TransformControls(client.camera, client.renderer.domElement);
   const restrict= {
