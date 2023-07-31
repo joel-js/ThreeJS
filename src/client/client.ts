@@ -7,7 +7,7 @@ import SceneInit from "./SceneInit";
 import App from "./App";
 import { initial_State } from "./StateManagement/StateManager";
 import Wrapper from "./Components/Wrapper";
-import { SequenceMovement } from "./Modules/SequenceMovement";
+import { navigateBack, navigateForward } from "./Modules/SequenceMovement";
 
 const client = new SceneInit();
 client.initialize();
@@ -33,38 +33,38 @@ wrapper._position = {x: 0, y: 5, z: 0 };
 mainWrapper.add(wrapper);
 client.wrappers.push(wrapper);
 
-SequenceMovement(client);
+// SequenceMovement(client);
 // })
 
-// setTimeout(() => {
-//   navigateBack(client);
-// }, 3000)
-// setTimeout(() => {
-//   navigateBack(client);
-// }, 6000)
-// setTimeout(() => {
-//   navigateBack(client);
-// }, 9000)
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 12000)
-// setTimeout(() => {
-//   // wrapper._position = {x: 5, y: 0, z: 5}
-//   wrapper._rotation = {x: Math.PI/4, y: 0, z: 0};
-// }, 15000)
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 18000)
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 21000)
+setTimeout(() => {
+  navigateBack(client);
+}, 3000)
+setTimeout(() => {
+  navigateBack(client);
+}, 6000)
+setTimeout(() => {
+  navigateBack(client);
+}, 9000)
+setTimeout(() => {
+  navigateForward(client);
+}, 12000)
+setTimeout(() => {
+  // wrapper._position = {x: 5, y: 0, z: 5}
+  wrapper._rotation = {x: Math.PI/4, y: 0, z: 0};
+}, 15000)
+setTimeout(() => {
+  navigateForward(client);
+}, 18000)
+setTimeout(() => {
+  navigateForward(client);
+}, 21000)
 
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 24000);
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 24000);
+setTimeout(() => {
+  navigateForward(client);
+}, 24000);
+setTimeout(() => {
+  navigateForward(client);
+}, 24000);
 // const wrapper2Action = sequence[2]
 // const wrapper2 = sequence[0].payload.create
 // if (wrapper2){

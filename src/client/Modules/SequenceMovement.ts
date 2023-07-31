@@ -66,7 +66,7 @@ const reverse_position_scale = (
   }
 };
 
-const navigateBack = (main: SceneInit) => {
+export const navigateBack = (main: SceneInit) => {
   set_track(track.inactive);
   if (get_curr_index() < 0) {
     set_curr_index(sequence.length - 1);
@@ -96,7 +96,7 @@ const navigateBack = (main: SceneInit) => {
   set_track(track.active);
 };
 
-const navigateForward = (main: SceneInit) => {
+export const navigateForward = (main: SceneInit) => {
   set_track(track.inactive);
   if (get_curr_index() < 0) {
     set_curr_index(sequence.length - 1);
@@ -131,14 +131,41 @@ const navigateForward = (main: SceneInit) => {
 };
 
 export const SequenceMovement = (main: SceneInit) => {
-  const forwardParams = {
-    forward: () =>navigateForward(main),
-    isButtonDisabled: true
-  };
-  const backParams = {
-    back: () =>navigateBack(main),
-    isButtonDisabled: true
-  };
-  main.gui.add(forwardParams, 'forward');
-  main.gui.add(backParams, 'back');
+  // const forwardParams = {
+  //   forward: () =>navigateForward(main),
+  //   isButtonDisabled: true
+  // };
+  // const backParams = {
+  //   back: () =>navigateBack(main),
+  //   isButtonDisabled: true
+  // };
+  // main.gui.add(forwardParams, 'forward');
+  // main.gui.add(backParams, 'back');
+
+  // const backButton = document.createElement('button');
+  // backButton.textContent = 'Back';
+  // backButton.style.marginRight = '5px';
+  // backButton.disabled = true;
+  
+  // const forwardButton = document.createElement('button');
+  // forwardButton.textContent = 'Forward';
+  // forwardButton.disabled = true;
+
+  // const updateButtons = () => {
+  //   backButton.disabled = get_curr_index() <= 0 ;
+  //   forwardButton.disabled = get_curr_index() >= sequence.length-1;
+  // };
+  // const init_sequences = () => {
+  //   updateButtons();
+  //   backButton.disabled = false;
+  // }
+  // backButton.addEventListener('click', () => {
+  //   navigateBack(main);
+  //   updateButtons();
+  // });
+  // forwardButton.addEventListener('click', () => {
+  //   navigateForward(main);
+  //   updateButtons();
+  // });
+  // main.gui.add({ 'Sequence Movements': init_sequences }, 'Sequence Movements')
 };
