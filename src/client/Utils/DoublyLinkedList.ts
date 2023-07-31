@@ -144,6 +144,50 @@ export default class DoublyLinkedList<T> {
     return true;
   }
 
+  public insert(index: number, value: T): boolean {
+    if (index < 0 || index > this.len) {
+      return false; // Invalid index
+    }
+
+    if (index === 0) {
+      // Inserting at the beginning (head)
+      this.unshift(value);
+    } else if (index === this.len) {
+      // Inserting at the end (tail)
+      this.push(value);
+    } else {
+      // Inserting at a middle index
+      const newNode: Node<T> = {
+        value: value,
+        prev: null,
+        next: null,
+      };
+
+      let currentNode = this.head;
+      let currentIndex = 0;
+
+      while (currentNode && currentIndex < index) {
+        currentNode = currentNode.next;
+        currentIndex++;
+      }
+
+      if (!currentNode) {
+        return false; // Something went wrong
+      }
+
+      // Update the references of previous and next nodes
+      const prevNode = currentNode.prev;
+      prevNode!.next = newNode;
+      newNode.prev = prevNode;
+      newNode.next = currentNode;
+      currentNode.prev = newNode;
+
+      this.len++;
+    }
+
+    return true;
+  }
+
   public forEach(callback: (value: T, index: number) => void): void {
     let currentNode = this.head;
     let index = 0;
