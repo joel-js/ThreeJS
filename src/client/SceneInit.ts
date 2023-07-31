@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { MeshType, Mouse, WrapperType } from './Utils/types';
-import { WrapperComponent } from "./Components/WrapperComponent";
+import Wrapper from "./Components/Wrapper";
 import * as dat from "dat.gui";
 
 export default class SceneInit {
@@ -10,7 +10,7 @@ export default class SceneInit {
   private readonly _renderer: THREE.WebGLRenderer;
   private readonly _controller: OrbitControls;
   private _meshes: Array<MeshType>;
-  private _wrappers: Array<WrapperComponent>;
+  private _wrappers: Array<Wrapper>;
   // private _wrappers: Array<WrapperType>;
   private _raycaster: THREE.Raycaster;
   private _mouse: Mouse;
@@ -56,7 +56,7 @@ export default class SceneInit {
     return this._meshes;
   }
 
-  public get wrappers(): Array<WrapperComponent> {
+  public get wrappers(): Array<Wrapper> {
   // public get wrappers(): Array<WrapperType> {
     return this._wrappers;
   }
@@ -77,7 +77,7 @@ export default class SceneInit {
     this._meshes = meshes;
   }
 
-  public set wrappers(wrappers: Array<WrapperComponent>) {
+  public set wrappers(wrappers: Array<Wrapper>) {
   // public set wrappers(wrappers: Array<WrapperType>) {
     this._wrappers = wrappers;
   }

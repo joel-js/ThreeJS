@@ -61,3 +61,8 @@ export interface Node<T> {
   prev: Node<T> | null;
   next: Node<T> | null;
 }
+
+export enum Navigate {
+  forward,
+  backward
+}

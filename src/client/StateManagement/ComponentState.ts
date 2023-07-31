@@ -35,9 +35,8 @@ export class ComponentState {
     if(isUpdate){
         this.delta.delete(last-1);
     }
-    console.log('each delta ***********');
-    for(let i=0; i<this.delta.length; i++)
-      console.log('delta ',this.delta.get(i));
+    // for(let i=0; i<this.delta.length; i++)
+    //   console.log('delta ',this.delta.get(i));
   }
   public get() {
     return _.cloneDeep(this.delta.getTail())
