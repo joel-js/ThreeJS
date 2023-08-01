@@ -29,8 +29,11 @@ const get_last = () => sequence.length - 1;
 export const _get = (i: number): _State | undefined =>
   _.cloneDeep(sequence.get(i));
 
-export const _set = (state: _State): boolean => {
-  let rt = false;
+  // export const _getter = (i: number): _State | undefined =>
+  // sequence.get(i);
+
+export const _set = (state: _State): [number, number] => {
+  let rt: [number, number] = [0, 0];
   if (get_last() < 0) {
     sequence.push(state);
   } else if (
@@ -39,15 +42,17 @@ export const _set = (state: _State): boolean => {
     state.name === sequence.get(get_curr_index())?.name
   ) {
     const curr_i = get_curr_index();
+    const curr_state = sequence.get(curr_i);
     if (
-      state.payload.action === sequence.get(curr_i)?.payload.action &&
+      state.payload.action === curr_state?.payload.action &&
       state.payload.action !== "add"
     ) {
       sequence.delete(curr_i);
       sequence.insert(curr_i, state);
-      rt = true;
+      rt = [1, curr_state?.payload.payload_id];
     } else {
       sequence.insert(curr_i + 1, state);
+      rt = [0, curr_state?.payload.payload_id as number];
     }
   } else if (state.name === sequence.get(get_last())?.name) {
     if (
@@ -56,7 +61,7 @@ export const _set = (state: _State): boolean => {
     ) {
       sequence.pop();
       sequence.push(state);
-      rt = true;
+      rt = [1, 0];
     } else {
       sequence.push(state);
     }

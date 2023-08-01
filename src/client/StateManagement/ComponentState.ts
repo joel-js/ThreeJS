@@ -1,9 +1,9 @@
-import * as _ from 'lodash';
+import * as _ from "lodash";
 
 import { Object3D } from "three";
 import { Payload, track } from "../Utils/types";
-import { _set, _State } from "./SequentialManager";
-import DoublyLinkedList from '../Utils/DoublyLinkedList';
+import { _set, _State, get_curr_index } from "./SequentialManager";
+import DoublyLinkedList from "../Utils/DoublyLinkedList";
 
 export class ComponentState {
   public name: string;
@@ -20,25 +20,52 @@ export class ComponentState {
     _track && this.initialize(obj);
   }
 
-  private addToSequence(): boolean{
-    return _set(new _State(this.name, this.type, this.delta.getTail() as Payload));
+  private addToSequence(): [number, number] {
+    return _set(
+      new _State(this.name, this.type, this.delta.getTail() as Payload)
+    );
   }
 
   private initialize(obj: Object3D) {
-    this.delta.push({ payload_id: Math.random() ,action: "create", create: obj });
+    this.delta.push({
+      payload_id: Math.random(),
+      action: "create",
+      create: obj,
+    });
     this.addToSequence();
   }
   public set(payload: Payload) {
-    this.delta.push(payload)
-    const isUpdate: boolean = this.addToSequence();
-    let last = this.delta.length-1;
-    if(isUpdate){
-        this.delta.delete(last-1);
+    this.delta.push(payload);
+    const isUpdate: [number, number] = this.addToSequence();
+    let last = this.delta.length - 1;
+    if (isUpdate[0] === 1 && isUpdate[1] === 0 ) {
+      this.delta.delete(last - 1);
     }
-    // for(let i=0; i<this.delta.length; i++)
-    //   console.log('delta ',this.delta.get(i));
+    else if(isUpdate[0] === 1 && isUpdate[1] !== 0) {
+      let del_index = -1;
+      this.delta.forEach((payload, i) => {
+        if(payload.payload_id === isUpdate[1]) {
+          del_index = i;
+        }
+      });
+      this.delta.delete(del_index);
+      const la_val = this.delta.pop();
+      this.delta.insert(del_index, la_val as Payload);
+    }
+    else if(isUpdate[0] === 0 && isUpdate[1] !== 0) { 
+      let insert_index = -1;
+      this.delta.forEach((payload, i) => {
+        if(payload.payload_id === isUpdate[1]) {
+          insert_index = i;
+        }
+      });
+      const la_val = this.delta.pop();
+      this.delta.insert(insert_index+1, la_val as Payload);
+    }
+    for (let i = 0; i < this.delta.length; i++)
+      console.log("delta ", this.delta.get(i));
   }
   public get() {
-    return _.cloneDeep(this.delta.getTail())
+    return _.cloneDeep(this.delta.getTail());
   }
 }

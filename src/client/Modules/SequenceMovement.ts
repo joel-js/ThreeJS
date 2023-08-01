@@ -10,6 +10,7 @@ import {
   get_curr_index,
   set_curr_index,
   sequence,
+  // _getter
 } from "../StateManagement/SequentialManager";
 import { _get } from "../StateManagement/SequentialManager";
 
@@ -129,6 +130,11 @@ export const navigateForward = (main: SceneInit) => {
   });
   set_track(track.active);
 };
+
+// export const temp = () => {
+//   const a = _getter(2);
+//   if(a) a.payload.action = 'split'
+// };
 
 export const SequenceMovement = (main: SceneInit) => {
   // const forwardParams = {

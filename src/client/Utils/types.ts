@@ -43,7 +43,7 @@ export type Coord = {
 
 export type Payload = {
   payload_id: number;
-  action: string;
+  action: string; // "position" | "rotation" | "scale" | "create" | "add"
   position?: V3;
   rotation?: THREE.Euler;
   scale?: V3;
