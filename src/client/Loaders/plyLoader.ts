@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 import { rt, MeshType, WrapperType } from "../Utils/types";
 import { setState } from "../StateManagement/StateManager";
+import Wrapper from "../Components/Wrapper";
 
 const plyLoader2 = (files: Array<string>): Promise<THREE.BufferGeometry[]> => {
   const plyModels: Promise<THREE.BufferGeometry>[] = [];
@@ -15,7 +16,7 @@ const plyLoader2 = (files: Array<string>): Promise<THREE.BufferGeometry[]> => {
 const plyLoader = (
   files: Array<string>,
   meshes: Array<MeshType>,
-  meshWrappers: Array<WrapperType>,
+  meshWrappers: Array<Wrapper>,
   [material, gumMaterial]: Object[]
 ): Promise<rt> => {
   return new Promise<rt>((resolve) => {
@@ -24,13 +25,12 @@ const plyLoader = (
       for (let i = 0; i < geometries.length; i++) {
         geometries[i].computeVertexNormals();
         const mesh = new THREE.Mesh(geometries[i], new THREE.MeshLambertMaterial(material));
-        const meshWrapper = new THREE.Group();
+        const meshWrapper = new Wrapper(files[i]);
         mesh.name = files[i];
-        meshWrapper.name = files[i];
         setState(mesh.name, {
           material: material
         });
-        meshWrapper.add(mesh);
+        meshWrapper._add(mesh);
 
         const boundingBox = new THREE.Box3().setFromObject(mesh);
 
@@ -43,7 +43,7 @@ const plyLoader = (
 
         const center = boundingBox.getCenter(new THREE.Vector3());
 
-        meshWrapper.position.set(center.x, center.y, center.z);
+        meshWrapper._position.set(center.x, center.y, center.z);
         mesh.position.set(-center.x, -center.y, -center.z);
 
         meshes.push(mesh);

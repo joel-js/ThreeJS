@@ -11,6 +11,7 @@ import {
   negativeVector,
   prevNext
 } from "../Utils/HelperFunctions";
+import Wrapper from "../Components/Wrapper";
 
 class TeethMovements {
   private main: SceneInit;
@@ -35,22 +36,23 @@ class TeethMovements {
     this.moveTeeth = this.moveTeeth.bind(this);
   }
 
-  private mesial(wrapper: WrapperType) {
-    wrapper.position.add(
+  private mesial(wrapper: Wrapper) {
+    wrapper._position = wrapper._position.add(
       // findTranslateAxis(this.main.wrappers, wrapper).next.multiplyScalar(0.1)
       prevNext(this.main.wrappers, wrapper).multiplyScalar(0.01)
     );
+
   }
 
-  private distal(wrapper: WrapperType) {
-    wrapper.position.add(
+  private distal(wrapper: Wrapper) {
+    wrapper._position = wrapper._position.add(
       // findTranslateAxis(this.main.wrappers, wrapper).prev.multiplyScalar(0.1)
       prevNext(this.main.wrappers, wrapper).negate().multiplyScalar(0.01)
 
     );
   }
 
-  private buccal(wrapper: WrapperType) {
+  private buccal(wrapper: Wrapper) {
     const buccalAxis: V3 = new THREE.Vector3()
       .crossVectors(
         getLocalY(wrapper),
@@ -61,10 +63,10 @@ class TeethMovements {
     if (!this.buccalLigualAxis[wrapper.name]) {
       this.buccalLigualAxis[wrapper.name] = buccalAxis;
     }
-    wrapper.position.add(this.buccalLigualAxis[wrapper.name]);
+    wrapper._position =  wrapper._position.add(this.buccalLigualAxis[wrapper.name]);
   }
 
-  private ligual(wrapper: WrapperType) {
+  private ligual(wrapper: Wrapper) {
     const ligualAxis: V3 = new THREE.Vector3().crossVectors(
       getLocalY(wrapper),
       findTranslateAxis(this.main.wrappers, wrapper).next.normalize()
@@ -72,10 +74,10 @@ class TeethMovements {
     if (!this.buccalLigualAxis[wrapper.name]) {
       this.buccalLigualAxis[wrapper.name] = ligualAxis;
     }
-    wrapper.position.add(negativeVector(this.buccalLigualAxis[wrapper.name]));
+    wrapper._position =  wrapper._position.add(negativeVector(this.buccalLigualAxis[wrapper.name]));
   }
 
-  private moveTeeth(wrapper: WrapperType) {
+  private moveTeeth(wrapper: Wrapper) {
     if (this.keydownListener) {
       window.removeEventListener("keydown", this.keydownListener);
     }

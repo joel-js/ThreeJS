@@ -2,7 +2,7 @@ import * as THREE from "three";
 import * as _ from "lodash";
 import SceneInit from "../SceneInit";
 import DoublyLinkedList from "../Utils/DoublyLinkedList";
-import { Payload, track, V3 } from "../Utils/types";
+import { Payload, track, V3, WrapperType, AxisAngle } from "../Utils/types";
 import Wrapper from "../Components/Wrapper";
 import {
   _State,
@@ -16,24 +16,26 @@ import { _get } from "../StateManagement/SequentialManager";
 
 const reverse_position_scale = (
   history: DoublyLinkedList<Payload>,
-  wrapper: Wrapper,
+  wrapper: WrapperType,
   curr_state: _State,
   action: string
 ) => {
-  let attribute: V3| THREE.Euler;
-  switch(action) {
+  let attribute: V3 | THREE.Euler | AxisAngle;
+  switch (action) {
     case "position":
       attribute = new THREE.Vector3(0, 0, 0);
-    break;
+      break;
     case "scale":
       attribute = new THREE.Vector3(1, 1, 1);
-    break;
+      break;
     case "rotation":
       attribute = new THREE.Euler(0, 0, 0);
-    break;
+      break;
+    case "rotateOnAxis":
+      attribute = { axis: new THREE.Vector3(0, 0, 0), angle: 0 };
     default:
       attribute = new THREE.Vector3(0, 0, 0);
-    break;
+      break;
   }
   let flag = true;
   history.forEach((payload) => {
@@ -42,28 +44,35 @@ const reverse_position_scale = (
       return;
     }
     if (flag && payload.action === curr_state.payload.action) {
-      switch(action){
+      switch (action) {
         case "position":
-          attribute = payload.position || attribute
-        break;
+          attribute = payload.position || attribute;
+          break;
         case "scale":
           attribute = payload.scale || attribute;
-        break;
+          break;
         case "rotation":
           attribute = payload.rotation || attribute;
-        break;
+          break;
+        case "rotateOnAxis":
+          attribute = payload.rotateOnAxis || attribute;
+          break;
       }
-      if (action === "position") attribute = payload.position || attribute;
-      else attribute = payload.scale || attribute;
+      // if (action === "position") attribute = payload.position || attribute;
+      // else attribute = payload.scale || attribute;
     }
   });
-  if (attribute instanceof THREE.Vector3){
+  if (attribute instanceof THREE.Vector3) {
     if (action === "position") wrapper.position.copy(attribute);
     else wrapper.scale.copy(attribute);
-  }
-  else if (attribute instanceof THREE.Euler) {
+  } else if (attribute instanceof THREE.Euler) {
     if (action === "rotation") wrapper.rotation.copy(attribute);
-    else wrapper.rotation.copy(attribute);
+  } else if (
+    typeof attribute === "object" &&
+    "axis" in attribute &&
+    "angle" in attribute
+  ) {
+    wrapper.rotateOnAxis(attribute["axis"], attribute["angle"]);
   }
 };
 
@@ -88,9 +97,14 @@ export const navigateBack = (main: SceneInit) => {
         curr_state,
         curr_state?.payload.action
       );
-    }
-    else if (curr_state?.payload.action === "rotation") {
-
+    } else if (curr_state?.payload.action === "rotation") {
+    } else if (curr_state?.payload.action === "rotateOnAxis") {
+      reverse_position_scale(
+        history,
+        wrapper,
+        curr_state,
+        curr_state?.payload.action
+      );
     }
   });
   set_curr_index(get_curr_index() - 1);
@@ -114,17 +128,22 @@ export const navigateForward = (main: SceneInit) => {
           wrapper.position.copy(
             curr_state.payload.position || new THREE.Vector3(0, 0, 0)
           );
-        break;
+          break;
         case "scale":
           wrapper.scale.copy(
             curr_state.payload.scale || new THREE.Vector3(1, 1, 1)
           );
-        break;
+          break;
         case "rotation":
           wrapper.rotation.copy(
             curr_state.payload.rotation || new THREE.Euler(0, 0, 0)
-          );  
-        break;
+          );
+          break;
+        case "rotateOnAxis":
+          wrapper.rotateOnAxis(
+            curr_state.payload.rotateOnAxis?.axis || new THREE.Vector3(1, 1, 1),
+            curr_state.payload.rotateOnAxis?.angle || 0
+          );
       }
     }
   });
@@ -147,16 +166,13 @@ export const SequenceMovement = (main: SceneInit) => {
   // };
   // main.gui.add(forwardParams, 'forward');
   // main.gui.add(backParams, 'back');
-
   // const backButton = document.createElement('button');
   // backButton.textContent = 'Back';
   // backButton.style.marginRight = '5px';
   // backButton.disabled = true;
-  
   // const forwardButton = document.createElement('button');
   // forwardButton.textContent = 'Forward';
   // forwardButton.disabled = true;
-
   // const updateButtons = () => {
   //   backButton.disabled = get_curr_index() <= 0 ;
   //   forwardButton.disabled = get_curr_index() >= sequence.length-1;

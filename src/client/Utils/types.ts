@@ -1,9 +1,11 @@
+import Wrapper from "../Components/Wrapper";
+
 export type WrapperType = THREE.Group;
 export type MeshType = THREE.Mesh;
 export type V3 = THREE.Vector3;
 export type rt = {
   meshes: Array<MeshType>;
-  wrappers: Array<WrapperType>;
+  wrappers: Array<Wrapper>;
 };
 export type Mouse = THREE.Vector2 & {
   x: number;
@@ -49,6 +51,10 @@ export type Payload = {
   scale?: V3;
   create?: THREE.Object3D;
   add?: THREE.Mesh;
+  rotateOnAxis?: {
+    axis: V3,
+    angle: number
+  };
 };
 
 export enum track {
@@ -65,4 +71,9 @@ export interface Node<T> {
 export enum Navigate {
   forward,
   backward
+}
+
+export interface AxisAngle {
+  axis: V3;
+  angle: number;
 }

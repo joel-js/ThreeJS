@@ -29,45 +29,96 @@ const get_last = () => sequence.length - 1;
 export const _get = (i: number): _State | undefined =>
   _.cloneDeep(sequence.get(i));
 
-  // export const _getter = (i: number): _State | undefined =>
-  // sequence.get(i);
-
+// export const _getter = (i: number): _State | undefined =>
+// sequence.get(i);
+/**
+ * rt = [0, 0] => just add to the last
+ * rt = [1, 0] => delete last and add to last
+ * rt = [0, x] => just add after x
+ * rt = [1, x] => delete x and insert at loc of x
+*/
 export const _set = (state: _State): [number, number] => {
   let rt: [number, number] = [0, 0];
-  if (get_last() < 0) {
+  if(get_last() == -1){
     sequence.push(state);
-  } else if (
-    get_curr_index() >= 0 &&
-    get_curr_index() < get_last() &&
-    state.name === sequence.get(get_curr_index())?.name
-  ) {
-    const curr_i = get_curr_index();
-    const curr_state = sequence.get(curr_i);
-    if (
-      state.payload.action === curr_state?.payload.action &&
-      state.payload.action !== "add"
-    ) {
-      sequence.delete(curr_i);
-      sequence.insert(curr_i, state);
-      rt = [1, curr_state?.payload.payload_id];
+    set_curr_index(get_curr_index() + 1);
+    rt = [0, 0];
+  }
+  else {
+    if (get_curr_index() === get_last()) {
+      const curr_i = get_curr_index();
+      const curr_state = sequence.get(curr_i);
+      if (
+        state.name === curr_state?.name &&
+        state.payload.action === curr_state?.payload.action &&
+        state.payload.action !== "add" &&
+        state.payload.action !== "rotateOnAxis"
+      ) {
+        rt = [1, 0]; // [1, x]
+        sequence.pop();
+        sequence.push(state);
+      }
+      else {
+        sequence.push(state);
+        set_curr_index(get_curr_index() + 1);
+        rt = [0, 0];
+      }
     } else {
-      sequence.insert(curr_i + 1, state);
-      rt = [0, curr_state?.payload.payload_id as number];
-    }
-  } else if (state.name === sequence.get(get_last())?.name) {
-    if (
-      state.payload.action === sequence.get(get_last())?.payload.action &&
-      state.payload.action !== "add"
-    ) {
-      sequence.pop();
-      sequence.push(state);
-      rt = [1, 0];
-    } else {
-      sequence.push(state);
+      const curr_i = get_curr_index();
+      const curr_state = sequence.get(curr_i);
+      
+      if (
+        state.name === curr_state?.name &&
+        state.payload.action === curr_state?.payload.action &&
+        state.payload.action !== "add" &&
+        state.payload.action !== "rotateOnAxis"
+        ) {
+        rt = [1, curr_state.payload.payload_id]; // [1, x]
+        sequence.delete(curr_i);
+        sequence.insert(curr_i, state);
+      }
+      else {
+        sequence.insert(curr_i + 1, state);
+        if(curr_state)
+          rt = [0, curr_state.payload.payload_id]; // [1, x]
+        set_curr_index(get_curr_index() + 1);
+      }
     }
   }
+  // } else if (
+  //   get_curr_index() >= 0 &&
+  //   get_curr_index() < get_last() &&
+  //   state.name === sequence.get(get_curr_index())?.name
+  // ) {
+  //   const curr_i = get_curr_index();
+  //   const curr_state = sequence.get(curr_i);
+  //   if (
+  //     state.payload.action === curr_state?.payload.action &&
+  //     state.payload.action !== "add"
+  //     ) {
+  //       sequence.delete(curr_i);
+  //       sequence.insert(curr_i, state);
+  //       rt = [1, curr_state?.payload.payload_id];
+  //   } else {
+  //     sequence.insert(curr_i + 1, state);
+  //     rt = [0, curr_state?.payload.payload_id as number];
+  //   }
+  // } else if (state.name === sequence.get(get_last())?.name) {
+  //   console.log('in here');
+  //   if (
+  //     state.payload.action === sequence.get(get_last())?.payload.action &&
+  //     state.payload.action !== "add"
+  //   ) {
+  //     sequence.pop();
+  //     sequence.push(state);
+  //     rt = [1, 0];
+  //   } else {
+  //     sequence.push(state);
+  //   }
+  // }
   console.log("**************");
   sequence.forEach((item) => console.log(item));
+  console.log(sequence.length);
   console.log("**************");
   return rt;
 };

@@ -3,6 +3,7 @@ import { WrapperType, WrapperLocalAxes, V3, Node } from "./types";
 import { VectorMapFiles } from "./constants";
 import SceneInit from "../SceneInit";
 import VectorMap from "./VectorMap";
+import Wrapper from "../Components/Wrapper";
 
 export const findTranslateAxis = (
   wrappers: WrapperType[],
@@ -66,15 +67,15 @@ export const antiClockWise = (wrapper: WrapperType, axes: WrapperLocalAxes) => {
   const axis = axes.prev.normalize();
   wrapper.rotateOnAxis(axis, angle);
 };
-export const xclockWise = (wrapper: WrapperType, axis: V3) => {
+export const xclockWise = (wrapper: Wrapper, axis: V3) => {
   const angle = Math.PI / 18;
   const normAxis = axis.normalize();
-  wrapper.rotateOnAxis(normAxis, angle);
+  wrapper._rotateOnAxis(normAxis, angle);
 };
-export const xantiClockWise = (wrapper: WrapperType, axis: V3) => {
+export const xantiClockWise = (wrapper: Wrapper, axis: V3) => {
   const angle = -Math.PI / 18;
   const normAxis = axis.normalize();
-  wrapper.rotateOnAxis(normAxis, angle);
+  wrapper._rotateOnAxis(normAxis, angle);
 };
 
 export const negativeVector = (v: V3): V3 =>

@@ -38,29 +38,31 @@ export class ComponentState {
     this.delta.push(payload);
     const isUpdate: [number, number] = this.addToSequence();
     let last = this.delta.length - 1;
-    if (isUpdate[0] === 1 && isUpdate[1] === 0 ) {
+    if (isUpdate[0] === 1 && isUpdate[1] === 0) {
+      console.log("here 10");
       this.delta.delete(last - 1);
-    }
-    else if(isUpdate[0] === 1 && isUpdate[1] !== 0) {
+    } else if (isUpdate[0] === 0 && isUpdate[1] !== 0) {
+      console.log("here 0x");
+
+      let insert_index = -1;
+      this.delta.forEach((payload, i) => {
+        if (payload.payload_id === isUpdate[1]) {
+          insert_index = i;
+        }
+      });
+      const la_val = this.delta.pop();
+      this.delta.insert(insert_index + 1, la_val as Payload);
+    } else if (isUpdate[0] === 1 && isUpdate[1] !== 0) {
+      console.log("here 1x");
       let del_index = -1;
       this.delta.forEach((payload, i) => {
-        if(payload.payload_id === isUpdate[1]) {
+        if (payload.payload_id === isUpdate[1]) {
           del_index = i;
         }
       });
       this.delta.delete(del_index);
       const la_val = this.delta.pop();
       this.delta.insert(del_index, la_val as Payload);
-    }
-    else if(isUpdate[0] === 0 && isUpdate[1] !== 0) { 
-      let insert_index = -1;
-      this.delta.forEach((payload, i) => {
-        if(payload.payload_id === isUpdate[1]) {
-          insert_index = i;
-        }
-      });
-      const la_val = this.delta.pop();
-      this.delta.insert(insert_index+1, la_val as Payload);
     }
     for (let i = 0; i < this.delta.length; i++)
       console.log("delta ", this.delta.get(i));

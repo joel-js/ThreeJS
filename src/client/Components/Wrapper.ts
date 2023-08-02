@@ -11,6 +11,9 @@ export default class Wrapper extends THREE.Group {
   private mesh: MeshType;
   public name: string;
   private state: ComponentState;
+  private wrotateAxis: V3;
+  private wrotateAngle: number;
+
   constructor(name: string) {
     super();
     this.name = name;
@@ -19,6 +22,8 @@ export default class Wrapper extends THREE.Group {
     this.wrotation = new THREE.Euler();
     this.state = new ComponentState(this.name, this.type, _.cloneDeep(this), get_track() );
     this.mesh = new THREE.Mesh();
+    this.wrotateAxis = new THREE.Vector3();
+    this.wrotateAngle = 0;
   }
 
   get _position(): V3 {
@@ -67,6 +72,15 @@ export default class Wrapper extends THREE.Group {
     get_track() && this.state.set({payload_id: Math.random(), action: "add", add: _.cloneDeep(mesh)});
     this.add(mesh);
   }
+
+  public _rotateOnAxis(axis: V3, angle: number) {
+    const state = _.cloneDeep({axis, angle})
+    this.wrotateAxis = axis;
+    this.wrotateAngle = angle;
+    get_track() && this.state.set({ payload_id: Math.random(), action: "rotateOnAxis", rotateOnAxis: state })
+    this.rotateOnAxis(axis, angle);
+  }
+
   public componentHistory(): ComponentState{
     return this.state;
   }
