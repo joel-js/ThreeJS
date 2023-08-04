@@ -156,3 +156,15 @@ export const Arrow = (main: SceneInit, wrapper: Wrapper, dir: V3, originVector?:
   const arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
   main.scene.add( arrowHelper );
 }
+
+export const retrieveTransformCoord = (posAttribute: THREE.BufferAttribute, matrix4: THREE.Matrix4) => {
+  console.log("retrieveTransformCoord");
+  const newCoord = []
+  for (let i = 0; i < posAttribute.count; i++) {
+    const a = new THREE.Vector3()
+    a.fromBufferAttribute(posAttribute, i)
+    a.applyMatrix4(matrix4)
+    newCoord.push(a)
+  }
+  return newCoord
+}

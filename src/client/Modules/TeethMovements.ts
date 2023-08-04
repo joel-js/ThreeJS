@@ -9,7 +9,8 @@ import {
   xclockWise,
   xantiClockWise,
   negativeVector,
-  prevNext
+  prevNext,
+  retrieveTransformCoord
 } from "../Utils/HelperFunctions";
 
 class TeethMovements {
@@ -57,7 +58,6 @@ class TeethMovements {
         findTranslateAxis(this.main.wrappers, wrapper).next
       )
       .normalize();
-    console.log("buccal", buccalAxis);
     if (!this.buccalLigualAxis[wrapper.name]) {
       this.buccalLigualAxis[wrapper.name] = buccalAxis;
     }
@@ -80,7 +80,37 @@ class TeethMovements {
       window.removeEventListener("keydown", this.keydownListener);
     }
 
+    let mesh = <THREE.Mesh> wrapper.children[0]
+    let gum = <THREE.Mesh> this.main.wrappers[0].children[0]
+    let gumWorldCoord = retrieveTransformCoord((<THREE.BufferAttribute> gum.geometry.attributes.position), gum.matrixWorld)
+    let meshWorldCoord = retrieveTransformCoord((<THREE.BufferAttribute> mesh.geometry.attributes.position), mesh.matrixWorld)
+    // TODO func for finding common vertices based on proximity into helper
+    let common_indices: {
+      gum_idx: number,
+      tooth_idx: number
+    }[] = []
+    gumWorldCoord.forEach( (el1, idx1) => {
+      meshWorldCoord.forEach((el2, idx2) => {
+        if (el1.distanceTo(el2) < 0.5) {
+          common_indices.push({
+            gum_idx: idx1,
+            tooth_idx: idx2
+          })
+        }
+      })
+    })
+
     this.keydownListener = (event: KeyboardEvent) => {
+      let teethCoord = retrieveTransformCoord((<THREE.BufferAttribute> mesh.geometry.attributes.position), mesh.matrixWorld)
+      const gumVertices: V3[] = []
+      const posAttribute: THREE.BufferAttribute = <THREE.BufferAttribute> gum.geometry.getAttribute('position')
+      common_indices.forEach(el => {
+        let {gum_idx, tooth_idx} = el
+        posAttribute.setXYZ(el.gum_idx, teethCoord[tooth_idx].x, teethCoord[tooth_idx].y, teethCoord[tooth_idx].z)
+      })
+      gum.geometry.setAttribute('position', posAttribute)
+      gum.geometry.attributes.position.needsUpdate = true
+
       switch (event.key) {
         case "w":
           this.mesial(wrapper);
@@ -143,7 +173,6 @@ class TeethMovements {
     if (this.intersects.length > 0) {
       this.intersectObject = this.intersects[0].object;
       // this.intersects[0]
-      console.log('here',this.intersects[0].face?.materialIndex, this.intersects[0].object.name);
     } else {
       this.intersectObject = null;
     }
