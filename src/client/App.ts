@@ -10,6 +10,7 @@ import CollisionMapping from './Modules/CollisionMapping';
 import Attachments from './Modules/Attachments';
 
 import Transparency from './Modules/Transparency';
+import { SequenceMovement } from './Modules/SequenceMovement';
 
 const App = (main: SceneInit) => {
   Transparency(main);
@@ -21,7 +22,7 @@ const App = (main: SceneInit) => {
   attachments.execute();
   const colMap = new CollisionMapping(main);
   colMap.execute();
-
+  SequenceMovement(main);
   // const loadedScenes: any = [];
   // let currentSceneIndex: number = -1;
   // const slider = document.createElement('input');

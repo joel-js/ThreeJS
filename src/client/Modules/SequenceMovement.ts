@@ -13,6 +13,7 @@ import {
   // _getter
 } from "../StateManagement/SequentialManager";
 import { _get } from "../StateManagement/SequentialManager";
+import { GUIController } from "dat.gui";
 
 const reverse_position_scale = (
   history: DoublyLinkedList<Payload>,
@@ -156,6 +157,29 @@ export const navigateForward = (main: SceneInit) => {
 // };
 
 export const SequenceMovement = (main: SceneInit) => {
+  let back: GUIController<Object>, forward: GUIController<Object>;
+  const onBackClick = () => {
+    if (sequence.length === 30 || get_curr_index() < 30) {
+      console.log("back - disabled", sequence.length, get_curr_index());
+    } else {
+      console.log("back - enabled", sequence.length, get_curr_index());
+      navigateBack(main);
+    }
+  };
+  const onForwardClick = () => {
+    if (sequence.length === 30 || get_curr_index() === sequence.length - 1) {
+      console.log("forward - disabled", sequence.length, get_curr_index());
+    } else {
+      console.log("foeward - enabled", sequence.length, get_curr_index());
+
+      navigateForward(main);
+    }
+  };
+  const buttonFolder = main.gui.addFolder("Navigate");
+  back = buttonFolder.add({ Back: onBackClick }, "Back").name("Back");
+  forward = buttonFolder
+    .add({ Forward: onForwardClick }, "Forward")
+    .name("Forward");
   // const forwardParams = {
   //   forward: () =>navigateForward(main),
   //   isButtonDisabled: true
