@@ -78,7 +78,7 @@ export const _set = (state: _State): [number, number] => {
         ) {
         // rt = [1, curr_state.payload.payload_id]; // [1, x]
         // sequence.delete(curr_i);
-        rt = [0, curr_state.payload.payload_id]; // [1, x]
+        rt = [0, curr_state.payload.payload_id]; // [0, x]
 
         set_curr_index(get_curr_index() + 1);
         sequence.insert(curr_i, state);

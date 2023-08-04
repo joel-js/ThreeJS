@@ -20,58 +20,6 @@ const gumMaterial: Object = initial_State['gum'].material || {};
 const meshes: MeshType[] = [];
 const meshWrappers: Wrapper[] = [];
 
-// const wrapper = new Wrapper('wrapper');
-// const cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshLambertMaterial(gumMaterial));
-// const cube2 = new THREE.Mesh(new THREE.BoxGeometry(2,2,2), new THREE.MeshLambertMaterial(material));
-// // client.scene.add(cube2);
-// // cube2.position.set(0,5,0);
-// // cube2.scale.set(2,1,1);
-// wrapper._add(cube);
-// wrapper._position = {x: 5, y: 0, z: 0 };
-// wrapper._scale = new THREE.Vector3(5,1,1);
-// wrapper._position = {x: 0, y: 5, z: 0 };
-// mainWrapper.add(wrapper);
-// client.wrappers.push(wrapper);
-// temp()
-// SequenceMovement(client);
-// })
-
-// setTimeout(() => {
-//   navigateBack(client);
-// }, 3000)
-// setTimeout(() => {
-//   navigateBack(client);
-// }, 6000)
-// setTimeout(() => {
-//   navigateBack(client);
-// }, 9000)
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 12000)
-// setTimeout(() => {
-//   // wrapper._position = {x: 5, y: 0, z: 5}
-//   wrapper._rotation = {x: Math.PI/4, y: 0, z: 0};
-// }, 15000)
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 15000)
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 18000)
-
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 21000);
-// setTimeout(() => {
-//   navigateForward(client);
-// }, 24000);
-// const wrapper2Action = sequence[2]
-// const wrapper2 = sequence[0].payload.create
-// if (wrapper2){
-//   wrapper2.add(cube2)
-//   mainWrapper.add(wrapper2)
-// } 
-// if (wrapper2) mainWrapper.add(wrapper2)
 plyLoader(files, meshes, meshWrappers, [material, gumMaterial])
   .then((result) => {
     client.meshes = result.meshes;
