@@ -54,8 +54,11 @@ export const _set = (state: _State): [number, number] => {
         state.payload.action !== "add" &&
         state.payload.action !== "rotateOnAxis"
       ) {
-        rt = [1, 0]; // [1, x]
-        sequence.pop();
+        // rt = [1, 0]; // [1, x]
+        rt = [0, 0]; // [1, x]
+
+        // sequence.pop();
+        set_curr_index(get_curr_index() + 1);
         sequence.push(state);
       }
       else {
@@ -73,8 +76,11 @@ export const _set = (state: _State): [number, number] => {
         state.payload.action !== "add" &&
         state.payload.action !== "rotateOnAxis"
         ) {
-        rt = [1, curr_state.payload.payload_id]; // [1, x]
-        sequence.delete(curr_i);
+        // rt = [1, curr_state.payload.payload_id]; // [1, x]
+        // sequence.delete(curr_i);
+        rt = [0, curr_state.payload.payload_id]; // [1, x]
+
+        set_curr_index(get_curr_index() + 1);
         sequence.insert(curr_i, state);
       }
       else {

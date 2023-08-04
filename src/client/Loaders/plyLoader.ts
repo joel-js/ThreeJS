@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
-import { rt, MeshType, WrapperType } from "../Utils/types";
+import { rt, MeshType, WrapperType, V3 } from "../Utils/types";
 import { setState } from "../StateManagement/StateManager";
 import Wrapper from "../Components/Wrapper";
 
@@ -43,7 +43,9 @@ const plyLoader = (
 
         const center = boundingBox.getCenter(new THREE.Vector3());
 
-        meshWrapper._position.set(center.x, center.y, center.z);
+        meshWrapper._position = center;
+        const y: V3 = new THREE.Vector3(0,1,0);
+        meshWrapper._rotateOnAxis(y,0);
         mesh.position.set(-center.x, -center.y, -center.z);
 
         meshes.push(mesh);

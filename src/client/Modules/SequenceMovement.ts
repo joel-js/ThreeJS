@@ -39,6 +39,7 @@ const reverse_position_scale = (
       break;
   }
   let flag = true;
+  let isSet = false;
   history.forEach((payload) => {
     if (payload.payload_id === curr_state.payload.payload_id) {
       flag = !flag;
@@ -48,49 +49,59 @@ const reverse_position_scale = (
       switch (action) {
         case "position":
           attribute = payload.position || attribute;
+          isSet = true;
           break;
         case "scale":
           attribute = payload.scale || attribute;
+          isSet = true;
           break;
         case "rotation":
           attribute = payload.rotation || attribute;
+          isSet = true;
           break;
         case "rotateOnAxis":
           attribute = payload.rotateOnAxis || attribute;
+          isSet = true;
           break;
       }
-      // if (action === "position") attribute = payload.position || attribute;
-      // else attribute = payload.scale || attribute;
     }
   });
-  if (attribute instanceof THREE.Vector3) {
-    if (action === "position") wrapper.position.copy(attribute);
-    else wrapper.scale.copy(attribute);
-  } else if (attribute instanceof THREE.Euler) {
-    if (action === "rotation") wrapper.rotation.copy(attribute);
-  } else if (
-    typeof attribute === "object" &&
-    "axis" in attribute &&
-    "angle" in attribute
-  ) {
-    wrapper.rotateOnAxis(attribute["axis"], attribute["angle"]);
+  if(isSet) {
+    if (attribute instanceof THREE.Vector3) {
+      if (action === "position") wrapper.position.copy(attribute);
+      else wrapper.scale.copy(attribute);
+    } else if (attribute instanceof THREE.Euler) {
+      if (action === "rotation") wrapper.rotation.copy(attribute);
+    } else if (
+      typeof attribute === "object" &&
+      "axis" in attribute &&
+      "angle" in attribute
+    ) {
+      wrapper.rotateOnAxis(attribute["axis"], -attribute["angle"]);
+    }
+  }
+  else {
+
   }
 };
 
 export const navigateBack = (main: SceneInit) => {
   set_track(track.inactive);
-  if (get_curr_index() < 0) {
-    set_curr_index(sequence.length - 1);
-  } else if (get_curr_index() > sequence.length - 1) {
-    set_curr_index(0);
-  }
+  // if (get_curr_index() < 0) {
+  //   console.log('get_curr_index() < 0 ',get_curr_index());
+  //   set_curr_index(sequence.length - 1);
+  //   console.log('set_curr_index(sequence.length - 1); ',get_curr_index());
+  // } else if (get_curr_index() > sequence.length - 1) {
+  //   set_curr_index(0);
+  // }
   const curr_state = _get(get_curr_index());
-
+  console.log("navigateBack currIndex", get_curr_index(), curr_state);
   main.wrappers.forEach((wrapper) => {
     const history: DoublyLinkedList<Payload> = wrapper.componentHistory().delta;
     if (
-      curr_state?.payload.action === "position" ||
-      curr_state?.payload.action === "scale"
+      wrapper.name === curr_state?.name &&
+      (curr_state?.payload.action === "position" ||
+        curr_state?.payload.action === "scale")
     ) {
       reverse_position_scale(
         history,
@@ -98,8 +109,14 @@ export const navigateBack = (main: SceneInit) => {
         curr_state,
         curr_state?.payload.action
       );
-    } else if (curr_state?.payload.action === "rotation") {
-    } else if (curr_state?.payload.action === "rotateOnAxis") {
+    } else if (
+      wrapper.name === curr_state?.name &&
+      curr_state?.payload.action === "rotation"
+    ) {
+    } else if (
+      wrapper.name === curr_state?.name &&
+      curr_state?.payload.action === "rotateOnAxis"
+    ) {
       reverse_position_scale(
         history,
         wrapper,
@@ -110,15 +127,49 @@ export const navigateBack = (main: SceneInit) => {
   });
   set_curr_index(get_curr_index() - 1);
   set_track(track.active);
+  
+  // set_track(track.inactive);
+  // if (get_curr_index() < 0) {
+  //   set_curr_index(sequence.length - 1);
+  // } else if (get_curr_index() > sequence.length - 1) {
+  //   set_curr_index(0);
+  // }
+  // const curr_state = _get(get_curr_index());
+
+  // main.wrappers.forEach((wrapper) => {
+  //   const history: DoublyLinkedList<Payload> = wrapper.componentHistory().delta;
+  //   if (
+  //     curr_state?.payload.action === "position" ||
+  //     curr_state?.payload.action === "scale"
+  //   ) {
+  //     reverse_position_scale(
+  //       history,
+  //       wrapper,
+  //       curr_state,
+  //       curr_state?.payload.action
+  //     );
+  //   } else if (curr_state?.payload.action === "rotation") {
+  //   } else if (curr_state?.payload.action === "rotateOnAxis") {
+  //     reverse_position_scale(
+  //       history,
+  //       wrapper,
+  //       curr_state,
+  //       curr_state?.payload.action
+  //     );
+  //   }
+  // });
+  // set_curr_index(get_curr_index() - 1);
+  // set_track(track.active);
 };
 
 export const navigateForward = (main: SceneInit) => {
+
   set_track(track.inactive);
-  if (get_curr_index() < 0) {
-    set_curr_index(sequence.length - 1);
-  } else if (get_curr_index() > sequence.length - 1) {
-    set_curr_index(0);
-  }
+  // if (get_curr_index() < 0) {
+  //   set_curr_index(sequence.length - 1);
+  // } else if (get_curr_index() > sequence.length - 1) {
+  //   set_curr_index(0);
+  // }
   set_curr_index(get_curr_index() + 1);
   console.log(get_curr_index());
   const curr_state = _get(get_curr_index());
@@ -149,6 +200,42 @@ export const navigateForward = (main: SceneInit) => {
     }
   });
   set_track(track.active);
+  // set_track(track.inactive);
+  // if (get_curr_index() < 0) {
+  //   set_curr_index(sequence.length - 1);
+  // } else if (get_curr_index() > sequence.length - 1) {
+  //   set_curr_index(0);
+  // }
+  // set_curr_index(get_curr_index() + 1);
+  // console.log(get_curr_index());
+  // const curr_state = _get(get_curr_index());
+  // main.wrappers.forEach((wrapper) => {
+  //   if (curr_state?.name === wrapper.name) {
+  //     switch (curr_state.payload.action) {
+  //       case "position":
+  //         wrapper.position.copy(
+  //           curr_state.payload.position || new THREE.Vector3(0, 0, 0)
+  //         );
+  //         break;
+  //       case "scale":
+  //         wrapper.scale.copy(
+  //           curr_state.payload.scale || new THREE.Vector3(1, 1, 1)
+  //         );
+  //         break;
+  //       case "rotation":
+  //         wrapper.rotation.copy(
+  //           curr_state.payload.rotation || new THREE.Euler(0, 0, 0)
+  //         );
+  //         break;
+  //       case "rotateOnAxis":
+  //         wrapper.rotateOnAxis(
+  //           curr_state.payload.rotateOnAxis?.axis || new THREE.Vector3(1, 1, 1),
+  //           curr_state.payload.rotateOnAxis?.angle || 0
+  //         );
+  //     }
+  //   }
+  // });
+  // set_track(track.active);
 };
 
 // export const temp = () => {
