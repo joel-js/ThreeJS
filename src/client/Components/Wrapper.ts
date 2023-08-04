@@ -32,12 +32,12 @@ export default class Wrapper extends THREE.Group {
 
   set _position(coord: Coord | V3) {
     if ("x" in coord && "y" in coord && "z" in coord) {
-      this.wposition.set(coord.x, coord.y, coord.z);
+      this.position.set(coord.x, coord.y, coord.z);
     } else {
-      this.wposition.copy(coord);
+      this.position.copy(coord);
     }
-    get_track() && this.state.set({ payload_id: Math.random(), action: "position", position: _.cloneDeep(this.wposition) })
-    this.position.copy(this.wposition);
+    get_track() && this.state.set({ payload_id: Math.random(), action: "position", position: _.cloneDeep(this.position) })
+    this.position.copy(this.position);
   }
 
   get _scale(): V3 {
