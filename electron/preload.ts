@@ -1,3 +1,17 @@
+import { contextBridge, ipcRenderer  } from 'electron';
+
+contextBridge.exposeInMainWorld(
+  'electron', {
+    send: (channel: string, data: any) => {
+      // whitelist channels
+      const validChannels: string[] = ['run-python-script'];
+      if (validChannels.includes(channel)) {
+        ipcRenderer.send(channel, data);
+      }
+    }
+  }
+);
+
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
   return new Promise(resolve => {
     if (condition.includes(document.readyState)) {
@@ -84,6 +98,10 @@ function useLoading() {
 
 const { appendLoading, removeLoading } = useLoading()
 domReady().then(appendLoading)
+contextBridge.exposeInMainWorld('loadingUtils', {
+  appendLoading,
+  removeLoading
+});
 
 window.onmessage = ev => {
   ev.data.payload === 'removeLoading' && removeLoading()

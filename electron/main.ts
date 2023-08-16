@@ -1,6 +1,6 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain  } from 'electron'
 import path from 'node:path'
-
+import { runPythonScript } from  './loadScripts';
 // The built directory structure
 //
 // ├─┬─┬ dist
@@ -22,6 +22,8 @@ function createWindow() {
   win = new BrowserWindow({
     icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
     webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
     },
   })
@@ -44,3 +46,14 @@ app.on('window-all-closed', () => {
 })
 
 app.whenReady().then(createWindow)
+
+ipcMain.on('run-python-script', (event) => {
+  runPythonScript((error, output) => {
+    if (error) {
+      // Handle error if needed
+      return;
+    }
+    // Notify the renderer process that the Python script has completed
+    event.sender.send('python-script-done', output);
+  });
+});
