@@ -34,3 +34,9 @@ export enum Mode {
   Rotate = 'rotate',
   Scale = 'scale'
 }
+
+// Tissue Manip
+export type commonIndexType = {
+  gum_idx: number,
+  tooth_idx: number
+}
