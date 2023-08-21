@@ -263,8 +263,9 @@ class TeethMovements {
           // this.main.scene.add(polyMesh)
           // this.main.scene.add(mesh2)
 
-          const curve = new THREE.CatmullRomCurve3(commonGumVertices);
-          const points = curve.getPoints(5000);
+          const curve = new THREE.CatmullRomCurve3(commonGumVertices, true);
+          const points = curve.getPoints(50000);
+          
           const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
           const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
@@ -279,7 +280,7 @@ class TeethMovements {
             polygon,
             new THREE.MeshLambertMaterial({
               ...initial_State.gum.material,
-              wireframe: false,
+              wireframe: true,
             })
           );
           // var newGeo = BufferGeometryUtils.mergeGeometries([
