@@ -280,7 +280,7 @@ class TeethMovements {
             polygon,
             new THREE.MeshLambertMaterial({
               ...initial_State.gum.material,
-              wireframe: true,
+              wireframe: false,
             })
           );
           // var newGeo = BufferGeometryUtils.mergeGeometries([

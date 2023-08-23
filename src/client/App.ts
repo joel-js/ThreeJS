@@ -6,6 +6,7 @@ import CollisionMapping from './Modules/CollisionMapping';
 
 import Transparency from './Modules/Transparency';
 import Attachments from './Modules/Attachments';
+import { Symmetry } from './Modules/Symmetry';
 const App = (main: SceneInit) => {
   Transparency(main);
   const mouseEvents = new MouseEvents(main);
@@ -16,6 +17,8 @@ const App = (main: SceneInit) => {
   // attachments.execute();
   const colMap = new CollisionMapping(main);
   // colMap.execute();
+  const symmetry = new Symmetry(main);
+  symmetry.execute();
 }
  
 export default App;
