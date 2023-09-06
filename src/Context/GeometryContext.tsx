@@ -20,7 +20,6 @@ const GeometryProvider = ({children}: GeometryProviderProps) => {
     const initGeometry = async () => {
       const initData = await PlyLoader();
       setGeometry(initData);
-      // console.log(initData);
     }
     initGeometry();
   // eslint-disable-next-line react-hooks/exhaustive-deps

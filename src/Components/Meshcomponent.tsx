@@ -1,19 +1,20 @@
 import React from 'react';
 import { Mesh } from 'three';
-import { useGeometryContext } from '../Context/contextHooks';
+import { BufferGeometry } from "three";
 
 type props = {
   color: number;
+  geometry: BufferGeometry
 }
 
-const MeshComponent = ({ color }: props) => {
+const MeshComponent = ({ color, geometry }: props) => {
   const ref = React.useRef<Mesh>(null);
-  const { geometry } = useGeometryContext();
-  console.log("geo: ",geometry);
+  // console.log(geometry);
   return(
-    <mesh ref={ref}>
-      <bufferGeometry attach="geometry" {...geometry[0]} />
-      <meshBasicMaterial color = { color } wireframe /> 
+    <mesh ref={ref} >
+      <bufferGeometry attach="geometry" {...geometry} />
+      {/* <torusKnotGeometry /> */}
+      <meshLambertMaterial color = { color } /> 
     </mesh>
   )
 };
