@@ -8,7 +8,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <Canvas >
+      <Canvas>
         <GeometryProvider>
           <ModuleRoutes />
         </GeometryProvider>

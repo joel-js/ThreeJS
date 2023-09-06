@@ -22,7 +22,6 @@ const GeometryProvider = ({children}: GeometryProviderProps) => {
       setGeometry(initData);
     }
     initGeometry();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const contextValue = {
     geometry,

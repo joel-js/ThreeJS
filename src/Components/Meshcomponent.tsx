@@ -1,21 +1,25 @@
-import React from 'react';
-import { Mesh } from 'three';
+import React from "react";
+import { Mesh } from "three";
 import { BufferGeometry } from "three";
+import { ThreeEvent } from "@react-three/fiber";
 
 type props = {
   color: number;
-  geometry: BufferGeometry
-}
+  geometry: BufferGeometry;
+  onDoubleClick?: (event: ThreeEvent<MouseEvent>) => void;
+};
 
-const MeshComponent = ({ color, geometry }: props) => {
+const MeshComponent = ({
+  color,
+  geometry,
+  onDoubleClick = () => {},
+}: props) => {
   const ref = React.useRef<Mesh>(null);
-  // console.log(geometry);
-  return(
-    <mesh ref={ref} >
+  return (
+    <mesh ref={ref} onDoubleClick={onDoubleClick}>
       <bufferGeometry attach="geometry" {...geometry} />
-      {/* <torusKnotGeometry /> */}
-      <meshLambertMaterial color = { color } /> 
+      <meshLambertMaterial color={color} />
     </mesh>
-  )
+  );
 };
 export default MeshComponent;

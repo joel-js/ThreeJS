@@ -5,7 +5,6 @@ import { DirectionalLightHelper } from "three";
 
 const DirectionalLightFollowingCamera: React.FC = () => {
   const camera = useThree((state) => {
-    console.log(state);
     return state.camera;
   });
 
@@ -18,7 +17,6 @@ const DirectionalLightFollowingCamera: React.FC = () => {
 
       // Update light target to match target position
       camera.getWorldDirection(lightRef.current.target.position);
-      // console.log(camera.position);
       // Update light helper
       if (lightHelperRef.current) {
         lightHelperRef.current.update();
@@ -45,7 +43,6 @@ const DirectionalLightFollowingCamera: React.FC = () => {
 // const DirectionalLightFollowingCamera: React.FC = () => {
 //   const lightRef = React.useRef<PointLight>(null);
 //   const camera = useThree((state) => {
-//     console.log(state);
 //     return state.camera;
 //   });
 //   useFrame(() => {

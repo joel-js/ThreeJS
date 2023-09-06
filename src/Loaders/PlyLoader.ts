@@ -7,6 +7,7 @@ const  PlyLoader = async () => {
     FILENAMES.map(async (filepath) => {
       const geometry = await loader.loadAsync(filepath);
       geometry?.computeVertexNormals();
+      geometry.name = filepath;
       return geometry;
     })
   );

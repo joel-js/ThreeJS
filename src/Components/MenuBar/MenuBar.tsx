@@ -11,7 +11,8 @@ const MenuBar: React.FC = () => {
   const navigate = useNavigate();
   const functionMappings: FunctionMappings = {
     moveTeeth: () => navigate("/home"),
-    collisionDetection: () => navigate("/collision")
+    collisionDetection: () => navigate("/collision"),
+    symmetry: ()=> navigate("/symmetry")
   };
   return (
     <div className="sidebar-menu-container">
