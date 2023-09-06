@@ -13,8 +13,9 @@ export const FILENAMES: Array<string> = [
   "Models/molar-2-right.ply",
   "Models/premolar-2-left.ply",
   "Models/premolar-2-right.ply",
-  "Models/premolar-1-left.ply",
   "Models/premolar-1-right.ply",
+  "Models/premolar-1-left.ply",
+  "dummy"
 ];
 
 export const MODELPATH: string = 'models/'
