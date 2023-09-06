@@ -1,21 +1,17 @@
 import React from "react";
 import MenuBarButton from "./MenuBarButton";
 import { actionButtons } from "./constants";
+import { useNavigate } from "react-router-dom";
 
 interface FunctionMappings {
   [key: string]: () => void;
 }
 
 const MenuBar: React.FC = () => {
-
+  const navigate = useNavigate();
   const functionMappings: FunctionMappings = {
-    moveTeeth: () => {
-      
-    },
-    collisionDetection: () => {
-      console.log("Collision detection clicked");
-    },
-    // Add more function mappings here for other buttons
+    moveTeeth: () => navigate("/home"),
+    collisionDetection: () => navigate("/collision")
   };
   return (
     <div className="sidebar-menu-container">
