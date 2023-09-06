@@ -11,7 +11,7 @@ interface CanvasComponentProps {
 
 const CanvasComponent = ({ children }: CanvasComponentProps) => {
   return(
-    <Canvas camera={{ position: [15, 15, 15] }} >
+    <Canvas  camera={{ fov: 75, position: [-10, 45, 20] }}>
       {children}
       <Outlet />
       <OrbitControls dampingFactor={0.1}/>  
