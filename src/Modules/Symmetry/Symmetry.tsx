@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { BufferGeometry, Mesh, Box3, Matrix4,PlaneGeometry,MeshBasicMaterial, Box3Helper } from "three"; // Import Vector3
+import { BufferGeometry, Mesh, Box3, Matrix4,PlaneGeometry,MeshBasicMaterial, Box3Helper,Vector3 } from "three"; // Import Vector3
 import { useGeometry } from "../../Context/contextHooks";
 import MeshComponent from "../../Components/Meshcomponent";
 
@@ -7,12 +7,14 @@ const Symmetry: React.FC = () => {
   const { geometry } = useGeometry();
   const meshRefs = useRef<Array<Mesh | null>>([]);
   const boundingBox = new Box3();
-
+  let planeMesh : THREE.Mesh | undefined;
 
   const clickHandler = (name: string) => {
+
     geometry.map((g: BufferGeometry, i: number) => {
+      const meshRef = meshRefs.current[i];
+      if(planeMesh) meshRef?.remove(planeMesh)
       if (g.name === name) {
-        const meshRef = meshRefs.current[i];
         meshRef?.geometry.computeBoundingBox();
         boundingBox.copy(meshRef?.geometry.boundingBox || new Box3());
         boundingBox.applyMatrix4(meshRef?.matrixWorld || new Matrix4());
@@ -22,16 +24,16 @@ const Symmetry: React.FC = () => {
         const max = boundingBox.max;
         console.log("Minimum Point:", min);
         console.log("Maximum Point:", max);
-        const maxPoint = max.clone();
-        const planeGeometry = new PlaneGeometry(1,1,1,1);
-        const planeMaterial = new MeshBasicMaterial({ color: 0x00ff00 });
-        const planeMesh = new Mesh(planeGeometry, planeMaterial);
-        planeMesh.position.copy(maxPoint);
-        // planeMeshRef.current = planeMesh;
-
-        // Add the plane to the scene
+        const center = new Vector3();
+        boundingBox.getCenter(center);
+        const top  = new Vector3(center.x,max.y,center.z);
+        // const maxPoint = max.clone();
+        const planeGeometry = new PlaneGeometry(100,25,25,10);
+        const planeMaterial = new MeshBasicMaterial({ wireframe: true });
+        planeMesh = new Mesh(planeGeometry, planeMaterial);
+        planeMesh.position.copy(top);
+        planeMesh.rotation.x = -Math.PI / 2;
         meshRef!.add(planeMesh);
-
 
       }
     });
