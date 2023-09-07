@@ -1,6 +1,7 @@
 import { BufferGeometry } from 'three';
 import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
 import { FILENAMES } from '../Utils/Constants';
+
 const  PlyLoader = async () => {
   const loader  = new PLYLoader();
   const loadedGeometries: BufferGeometry[] = await Promise.all(
