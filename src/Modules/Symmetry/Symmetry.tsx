@@ -1,40 +1,37 @@
-import React, { useRef } from "react";
-import { BufferGeometry, Mesh, Box3, Matrix4,PlaneGeometry,MeshBasicMaterial, Box3Helper,Vector3 } from "three"; // Import Vector3
+import React from "react";
+import * as THREE from "three"; // Import Vector3
 import { useGeometry } from "../../Context/contextHooks";
 import MeshComponent from "../../Components/Meshcomponent";
 
 const Symmetry: React.FC = () => {
   const { geometry } = useGeometry();
-  const meshRefs = useRef<Array<Mesh | null>>([]);
-  const boundingBox = new Box3();
-  let planeMesh : THREE.Mesh | undefined;
+  const meshRefs = React.useRef<Array<THREE.Mesh | null>>([]);
+  const boundingBox = new THREE.Box3();
+  const [topMeshLoc, setTopMeshLoc] = React.useState<THREE.Vector3>(
+    new THREE.Vector3()
+  );
+  const [symmetryMeshEnable, setSymmetryMeshEnable] =
+    React.useState<boolean>(false);
+  // const [botMeshLoc, setBotMeshLoc] = React.useState()
 
   const clickHandler = (name: string) => {
-
-    geometry.map((g: BufferGeometry, i: number) => {
-      const meshRef = meshRefs.current[i];
-      if(planeMesh) meshRef?.remove(planeMesh)
+    geometry.map((g: THREE.BufferGeometry, i: number) => {
       if (g.name === name) {
+        setSymmetryMeshEnable(true);
+        const meshRef = meshRefs.current[i];
         meshRef?.geometry.computeBoundingBox();
-        boundingBox.copy(meshRef?.geometry.boundingBox || new Box3());
-        boundingBox.applyMatrix4(meshRef?.matrixWorld || new Matrix4());
-        const helper = new Box3Helper(boundingBox);
-        meshRef?.add(helper);
+        boundingBox.copy(meshRef?.geometry.boundingBox || new THREE.Box3());
+        boundingBox.applyMatrix4(meshRef?.matrixWorld || new THREE.Matrix4());
+        // const helper = new Box3Helper(boundingBox);
+        // meshRef?.add(helper);
         const min = boundingBox.min;
         const max = boundingBox.max;
         console.log("Minimum Point:", min);
         console.log("Maximum Point:", max);
-        const center = new Vector3();
+        const center = new THREE.Vector3();
         boundingBox.getCenter(center);
-        const top  = new Vector3(center.x,max.y,center.z);
-        // const maxPoint = max.clone();
-        const planeGeometry = new PlaneGeometry(100,25,25,10);
-        const planeMaterial = new MeshBasicMaterial({ wireframe: true });
-        planeMesh = new Mesh(planeGeometry, planeMaterial);
-        planeMesh.position.copy(top);
-        planeMesh.rotation.x = -Math.PI / 2;
-        meshRef!.add(planeMesh);
-
+        // const top = new Vector3(center.x, max.y, center.z);
+        setTopMeshLoc(new THREE.Vector3(center.x, max.y, center.z));
       }
     });
   };
@@ -42,7 +39,7 @@ const Symmetry: React.FC = () => {
   return (
     <React.Fragment>
       {geometry &&
-        geometry.map((g: BufferGeometry, i: number) => {
+        geometry.map((g: THREE.BufferGeometry, i: number) => {
           return (
             <MeshComponent
               key={g.name}
@@ -53,6 +50,16 @@ const Symmetry: React.FC = () => {
             />
           );
         })}
+      {symmetryMeshEnable && (
+        <mesh position={topMeshLoc} rotation={[Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[25, 25, 10, 10]} />
+          <meshBasicMaterial
+            color="white"
+            side={THREE.DoubleSide}
+            wireframe={true}
+          />
+        </mesh>
+      )}
     </React.Fragment>
   );
 };

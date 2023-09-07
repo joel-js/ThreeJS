@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import { Mesh } from "three";
 import { BufferGeometry } from "three";
 import { ThreeEvent } from "@react-three/fiber";
