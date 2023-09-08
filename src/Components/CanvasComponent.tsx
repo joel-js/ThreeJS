@@ -12,7 +12,7 @@ interface CanvasComponentProps {
 
 const CanvasComponent = ({ children }: CanvasComponentProps) => {
   return (
-    <Canvas camera={{ fov: 75, position: [-10, 45, 20] }}>
+    <Canvas camera={{ fov: 75, position: [-10, 45, 20] }} orthographic={true}>
       <Perf position="top-left" />
       {children}
       <Outlet />
